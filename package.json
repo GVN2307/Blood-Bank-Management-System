@@ -1,0 +1,16 @@
+{
+    "name": "life-link-blood-bank",
+    "version": "1.0.0",
+    "description": "Root script to run full stack MERN app",
+    "scripts": {
+        "install-all": "npm install && npm install --prefix server && npm install --prefix client",
+        "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\" --kill-others-on-fail --prefix-colors \"bgBlue.bold,bgMagenta.bold\"",
+        "start": "npm run dev"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
