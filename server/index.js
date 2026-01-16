@@ -2,9 +2,9 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const { pool, checkConnection } = require('./db');
+const { pool, initDB } = require('./db');
 const userRoutes = require('./routes/user');
-const adminRoutes = require('./routes/admin');
+const adminRoutes = require('./routes/admin'); // Make sure this file exists, or remove if unused
 
 const app = express();
 const server = http.createServer(app);
@@ -108,8 +108,8 @@ io.on('connection', (socket) => {
     socket.on('join_room', (room) => socket.join(room));
 });
 
-// Check DB Connection on Start
-checkConnection();
+// Initialize DB on Start
+initDB();
 
 server.listen(3000, () => {
     console.log(`🚀 Server running on port 3000`);
