@@ -3,8 +3,10 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { pool, initDB } = require('./db');
+const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
-const adminRoutes = require('./routes/admin'); // Make sure this file exists, or remove if unused
+const adminRoutes = require('./routes/admin');
+const authenticateToken = require('./middleware/authMiddleware');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,39 +21,26 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/auth', authRoutes); // New Auth Routes
+app.use('/api/user', authenticateToken, userRoutes); // Protected
+app.use('/api/admin', authenticateToken, adminRoutes); // Protected
 
 // --- DATABASE API ---
 
-// Login
-app.post('/api/login', async (req, res) => {
-    const { email, password, type } = req.body;
-    try {
-        const [rows] = await pool.query('SELECT * FROM users WHERE email = ? AND password = ? AND type = ?', [email, password, type]);
-        if (rows.length > 0) {
-            res.json({ success: true, user: rows[0] });
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid credentials' });
-        }
-    } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Blood Banks List
+// Public Blood Banks List (Anyone can see list of banks?) Maybe public
 app.get('/api/bloodbanks', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM users WHERE type = "bloodbank"');
-        res.json(rows);
+        // Filter sensitive info
+        const safeRows = rows.map(r => ({ id: r.id, name: r.name, address: r.address, lat: r.latitude, lng: r.longitude, phone: r.phone }));
+        res.json(safeRows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
-// Inventory
-app.get('/api/inventory/:id', async (req, res) => {
+// Inventory (Protected)
+app.get('/api/inventory/:id', authenticateToken, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM inventory WHERE bloodbank_id = ?', [req.params.id]);
         res.json(rows);
@@ -60,7 +49,7 @@ app.get('/api/inventory/:id', async (req, res) => {
     }
 });
 
-app.post('/api/inventory', async (req, res) => {
+app.post('/api/inventory', authenticateToken, async (req, res) => {
     const { bloodbankId, bloodGroup, units } = req.body;
     try {
         // Check if exists
@@ -77,8 +66,8 @@ app.post('/api/inventory', async (req, res) => {
     }
 });
 
-// Broadcast Alert
-app.post('/api/request', async (req, res) => {
+// Broadcast Alert (Protected)
+app.post('/api/request', authenticateToken, async (req, res) => {
     const { hospitalId, bloodGroup, units } = req.body;
     try {
         const [hospital] = await pool.query('SELECT * FROM users WHERE id = ?', [hospitalId]);
