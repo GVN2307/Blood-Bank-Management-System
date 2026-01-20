@@ -32,7 +32,7 @@ router.post('/register', async (req, res) => {
         res.json({ success: true, message: 'User registered successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error during registration' });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -69,7 +69,7 @@ router.post('/login', async (req, res) => {
 
     } catch (error) {
         console.error("Login Error:", error);
-        res.status(500).json({ error: 'Database error' });
+        res.status(500).json({ error: error.message });
     }
 });
 

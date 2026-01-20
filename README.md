@@ -6,16 +6,59 @@ A premium, full-stack MERN application designed to streamline blood donation, in
 
 ---
 
-## 🚀 Quick Start (Recommended)
+## 🚀 Quick Start (Fresh Clone)
 
-1.  **Clone the repository** (if you haven't already).
-2.  **Open the root folder** in your terminal.
-3.  **Run ONE command**:
+1.  **Clone the repository**:
     ```bash
+    git clone https://github.com/YourUsername/Blood-Bank-Management-System.git
+    cd Blood-Bank-Management-System
+    ```
+
+2.  **Install Dependencies** (Root, Server, and Client):
+    ```bash
+    # Install server dependencies
+    cd server
+    npm install
+    
+    # Install client dependencies
+    cd ../client
+    npm install
+    ```
+
+3.  **Setup Environment** (Server):
+    Create a `.env` file in the `server` folder (optional, defaults are provided):
+    ```env
+    JWT_SECRET=your_super_secret_key_here
+    ```
+
+4.  **Start the System**:
+    Go back to the root or `server` folder and run:
+    ```bash
+    # In server terminal
+    cd server
+    node index.js
+    ```
+    *The server will verify/create the `bloodbank.db` file automatically on start.*
+
+    ```bash
+    # In client terminal
+    cd client
     npm run dev
     ```
 
-    *This command will install all dependencies, set up the database automatically, and launch both the backend (port 3000) and frontend (port 5173).*
+---
+
+## 🛠️ Troubleshooting
+
+### "Internal Server Error" on Login?
+-   **Check the Console**: Look at the terminal running `node index.js`. It will print the exact error.
+-   **Database Permissions**: Ensure the `server` directory is writable. The app needs to create/write to `bloodbank.db`.
+-   **Dependencies**: Ensure `bcryptjs` and `sqlite3` are installed (`npm install` in server).
+-   **Re-seed**: If the database seems corrupt, delete `bloodbank.db` from the `server` folder and restart the server. It will recreate it with fresh seed data.
+
+### Frontend can't connect?
+-   Ensure backend is running on Port 3000.
+-   Check `client/src/pages/Login.jsx` is pointing to `http://localhost:3000`.
 
 ---
 
