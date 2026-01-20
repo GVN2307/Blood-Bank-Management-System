@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -12,16 +12,20 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:3000/api/login', { email, password, type });
+            // Updated to use /api/auth/login
+            const res = await axios.post('http://localhost:3000/api/auth/login', { email, password, type });
             if (res.data.success) {
+                // Store Token
+                localStorage.setItem('token', res.data.token);
                 localStorage.setItem('user', JSON.stringify(res.data.user));
+
                 if (type === 'hospital') navigate('/hospital-dashboard');
                 else if (type === 'bloodbank') navigate('/bloodbank-dashboard');
                 else if (type === 'user') navigate('/user-dashboard');
                 else if (type === 'admin') navigate('/admin-dashboard');
             }
         } catch (err) {
-            setError('Invalid credentials');
+            setError(err.response?.data?.message || 'Invalid credentials');
         }
     };
 
@@ -95,6 +99,10 @@ function Login() {
                         <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }}>
                             Authenticate &rarr;
                         </button>
+
+                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                            <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Don't have an account? Sign Up</Link>
+                        </div>
                     </form>
                 </div>
 
