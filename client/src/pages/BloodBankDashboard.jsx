@@ -28,8 +28,11 @@ function BloodBankDashboard() {
     }, []);
 
     const fetchInventory = async () => {
+        const token = localStorage.getItem('token');
         try {
-            const res = await axios.get(`http://localhost:3000/api/inventory/${user.id}`);
+            const res = await axios.get(`http://localhost:3000/api/inventory/${user.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setInventory(res.data);
         } catch (err) {
             console.error(err);
@@ -39,12 +42,18 @@ function BloodBankDashboard() {
     const updateStock = async (bloodGroup, units) => {
         const newUnits = prompt(`Update stock for ${bloodGroup}:`, units);
         if (newUnits !== null) {
-            await axios.post('http://localhost:3000/api/inventory', {
-                bloodbankId: user.id,
-                bloodGroup,
-                units: newUnits
-            });
-            fetchInventory();
+            const token = localStorage.getItem('token');
+            try {
+                await axios.post('http://localhost:3000/api/inventory', {
+                    bloodGroup,
+                    units: parseInt(newUnits)
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                fetchInventory();
+            } catch (err) {
+                alert(err.response?.data?.error || 'Failed to update stock');
+            }
         }
     };
 
