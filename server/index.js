@@ -39,8 +39,12 @@ app.get('/api/bloodbanks', async (req, res) => {
     }
 });
 
-// Inventory (Protected)
+// Inventory (Protected - Only BloodBank)
 app.get('/api/inventory/:id', authenticateToken, async (req, res) => {
+    // IDOR check: Bloodbank can see own, or admin can see all
+    if (parseInt(req.params.id) !== req.user.id && req.user.type !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Access denied to other inventory' });
+    }
     try {
         const [rows] = await pool.query('SELECT * FROM inventory WHERE bloodbank_id = ?', [req.params.id]);
         res.json(rows);
@@ -49,8 +53,9 @@ app.get('/api/inventory/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.post('/api/inventory', authenticateToken, async (req, res) => {
-    const { bloodbankId, bloodGroup, units } = req.body;
+app.post('/api/inventory', authenticateToken, authorizeRole('bloodbank'), async (req, res) => {
+    const { bloodGroup, units } = req.body;
+    const bloodbankId = req.user.id; // Enforce logged-in ID
     try {
         // Check if exists
         const [existing] = await pool.query('SELECT * FROM inventory WHERE bloodbank_id = ? AND blood_group = ?', [bloodbankId, bloodGroup]);
@@ -66,9 +71,10 @@ app.post('/api/inventory', authenticateToken, async (req, res) => {
     }
 });
 
-// Broadcast Alert (Protected)
-app.post('/api/request', authenticateToken, async (req, res) => {
-    const { hospitalId, bloodGroup, units } = req.body;
+// Broadcast Alert (Protected - Only Hospital)
+app.post('/api/request', authenticateToken, authorizeRole('hospital'), async (req, res) => {
+    const { bloodGroup, units } = req.body;
+    const hospitalId = req.user.id; // Enforce logged-in ID
     try {
         const [hospital] = await pool.query('SELECT * FROM users WHERE id = ?', [hospitalId]);
 
