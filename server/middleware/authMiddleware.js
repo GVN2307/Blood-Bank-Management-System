@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
     const token = req.header('Authorization');
     if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
 
@@ -12,3 +12,14 @@ module.exports = (req, res, next) => {
         res.status(400).json({ error: 'Invalid token.' });
     }
 };
+
+const authorizeRole = (role) => {
+    return (req, res, next) => {
+        if (!req.user || req.user.type !== role) {
+            return res.status(403).json({ error: `Forbidden: Requires ${role} role` });
+        }
+        next();
+    };
+};
+
+module.exports = { authenticateToken, authorizeRole };

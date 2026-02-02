@@ -6,7 +6,7 @@ const { pool, initDB } = require('./db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
-const authenticateToken = require('./middleware/authMiddleware');
+const { authenticateToken, authorizeRole } = require('./middleware/authMiddleware');
 
 const app = express();
 const server = http.createServer(app);

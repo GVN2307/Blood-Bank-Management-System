@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
+const { authorizeRole } = require('../middleware/authMiddleware');
+
+router.use(authorizeRole('admin'));
 
 // Get System Stats
 router.get('/stats', async (req, res) => {
