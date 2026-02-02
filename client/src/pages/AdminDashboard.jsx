@@ -9,19 +9,36 @@ function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
-        // Fetch stats and users
-        // Mock data for now if API not ready
-        setStats({
-            users: { hospital: 5, bloodbank: 3, user: 12 },
-            blood_units: 120,
-            requests: { pending: 2, fulfilled: 15 }
-        });
+        const fetchAdminData = async () => {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: `Bearer ${token}` };
+            try {
+                const statsRes = await axios.get('http://localhost:3000/api/admin/stats', { headers });
+                // Process users array into object
+                const uCounts = { hospital: 0, bloodbank: 0, user: 0, admin: 0 };
+                statsRes.data.users.forEach(item => { uCounts[item.type] = item.count; });
 
-        setUsers([
-            { id: 1, name: 'NIMS Hyderabad', type: 'hospital', email: 'admin@nims.edu.in' },
-            { id: 3, name: 'Indian Red Cross', type: 'bloodbank', email: 'redcross@gmail.com' },
-            { id: 6, name: 'Ravi Kumar', type: 'user', email: 'ravi@gmail.com' }
-        ]);
+                const reqCounts = { pending: 0, fulfilled: 0, cancelled: 0 };
+                statsRes.data.requests.forEach(item => { reqCounts[item.status] = item.count; });
+
+                setStats({
+                    users: uCounts,
+                    blood_units: statsRes.data.blood_units,
+                    requests: reqCounts
+                });
+
+                const usersRes = await axios.get('http://localhost:3000/api/admin/users', { headers });
+                setUsers(usersRes.data);
+            } catch (err) {
+                console.error('Admin Fetch Error:', err);
+                if (err.response?.status === 403) {
+                    alert('Forbidden: Admin access required');
+                    navigate('/login');
+                }
+            }
+        };
+
+        fetchAdminData();
     }, []);
 
     const handleLogout = () => {
