@@ -26,23 +26,19 @@ function TestSchedule() {
 
     const handleBook = async () => {
         setLoading(true);
+        const token = localStorage.getItem('token');
         try {
-            const user = JSON.parse(localStorage.getItem('user'));
-            // In real app: Calls API
-            // await axios.post('/api/user/tests', {
-            //     userId: user.id,
-            //     hospitalId: selectedHospital.id,
-            //     testType: selectedTest
-            // });
-
-            // Simulate delay
-            setTimeout(() => {
-                setLoading(false);
-                setStep(3); // Success
-            }, 1500);
+            await axios.post('http://localhost:3000/api/user/tests', {
+                hospitalId: selectedHospital.id,
+                testType: selectedTest
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setLoading(false);
+            setStep(3);
         } catch (error) {
             setLoading(false);
-            alert('Failed to book test');
+            alert(error.response?.data?.error || 'Failed to book test');
         }
     };
 
