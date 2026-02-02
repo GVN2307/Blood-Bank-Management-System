@@ -48,15 +48,9 @@ router.post('/login', async (req, res) => {
 
         const user = rows[0];
 
-        // Compare password (support both hashed and legacy plain text for transition if needed, but here we enforce hash or plain check)
-        // NOTE: For existing users with plain text, this might fail unless we migrate them.
-        // We will assume new users use hash. For legacy support, we might need a condition.
         const isMatch = await bcrypt.compare(password, user.password);
 
-        // fallback for legacy plain text passwords (remove this in production once migrated)
-        const isLegacyMatch = user.password === password;
-
-        if (!isMatch && !isLegacyMatch) {
+        if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 

@@ -87,20 +87,31 @@ async function initDB() {
             );
         `);
 
-    // Check availability of seed data to avoid duplication
-    const users = await db.all('SELECT count(*) as count FROM users');
-    if (users[0].count === 0) {
-      console.log('🌱 Seeding Data...');
-      await db.exec(`
-                INSERT INTO users (type, name, email, password, address, latitude, longitude, phone) VALUES 
-                ('hospital', 'NIMS Hyderabad', 'admin@nims.edu.in', 'password123', 'Punjagutta, Hyderabad', 17.4116, 78.4489, '040-23489000'),
-                ('hospital', 'Apollo Hospitals Jubilee Hills', 'info@apollo.com', 'password123', 'Film Nagar, Hyderabad', 17.4156, 78.4077, '040-23607777'),
-                ('bloodbank', 'Indian Red Cross Society', 'redcross@gmail.com', 'password123', 'Vidya Nagar, Hyderabad', 17.4042, 78.5026, '040-27633087'),
-                ('bloodbank', 'Chiranjeevi Blood Bank', 'cbb@gmail.com', 'password123', 'Jubilee Hills, Hyderabad', 17.4265, 78.4128, '040-23547209'),
-                ('bloodbank', 'NTR Trust Blood Bank', 'ntr@trust.org', 'password123', 'Banjara Hills, Hyderabad', 17.4107, 78.4356, '040-30799999'),
-                ('admin', 'System Admin', 'admin@lifelink.com', 'admin123', 'Hyderabad', 17.3850, 78.4867, '9999999999'),
-                ('user', 'Ravi Kumar', 'ravi@gmail.com', 'password123', 'Kukatpally, Hyderabad', 17.4875, 78.3953, '9876543210');
+    const usersCount = await db.all('SELECT count(*) as count FROM users');
+    if (usersCount[0].count === 0) {
+      console.log('🌱 Seeding Data with Hashed Passwords...');
+      const bcrypt = require('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
 
+      const seedUsers = [
+        ['hospital', 'NIMS Hyderabad', 'admin@nims.edu.in', 'password123', 'Punjagutta, Hyderabad', 17.4116, 78.4489, '040-23489000'],
+        ['hospital', 'Apollo Hospitals Jubilee Hills', 'info@apollo.com', 'password123', 'Film Nagar, Hyderabad', 17.4156, 78.4077, '040-23607777'],
+        ['bloodbank', 'Indian Red Cross Society', 'redcross@gmail.com', 'password123', 'Vidya Nagar, Hyderabad', 17.4042, 78.5026, '040-27633087'],
+        ['bloodbank', 'Chiranjeevi Blood Bank', 'cbb@gmail.com', 'password123', 'Jubilee Hills, Hyderabad', 17.4265, 78.4128, '040-23547209'],
+        ['bloodbank', 'NTR Trust Blood Bank', 'ntr@trust.org', 'password123', 'Banjara Hills, Hyderabad', 17.4107, 78.4356, '040-30799999'],
+        ['admin', 'System Admin', 'admin@lifelink.com', 'admin123', 'Hyderabad', 17.3850, 78.4867, '9999999999'],
+        ['user', 'Ravi Kumar', 'ravi@gmail.com', 'password123', 'Kukatpally, Hyderabad', 17.4875, 78.3953, '9876543210']
+      ];
+
+      for (const u of seedUsers) {
+        const hashedPassword = await bcrypt.hash(u[3], salt);
+        await db.run(
+          'INSERT INTO users (type, name, email, password, address, latitude, longitude, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [u[0], u[1], u[2], hashedPassword, u[4], u[5], u[6], u[7]]
+        );
+      }
+
+      await db.exec(`
                 INSERT INTO inventory (bloodbank_id, blood_group, units) VALUES 
                 (3, 'A+', 10), (3, 'O+', 15), (3, 'B-', 5),
                 (4, 'AB+', 8), (4, 'O-', 2),
