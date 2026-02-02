@@ -29,7 +29,10 @@ function HospitalDashboard() {
     useEffect(() => {
         if (!user || user.type !== 'hospital') navigate('/login');
 
-        axios.get('http://localhost:3000/api/bloodbanks')
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:3000/api/bloodbanks', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
             .then(res => setBloodBanks(res.data))
             .catch(err => console.error(err));
 
@@ -39,15 +42,17 @@ function HospitalDashboard() {
     const handleRequest = async (e) => {
         e.preventDefault();
         setLoading(true);
+        const token = localStorage.getItem('token');
         try {
             await axios.post('http://localhost:3000/api/request', {
-                hospitalId: user.id,
                 bloodGroup: request.bloodGroup,
                 units: request.units
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             alert('Broadcast Successful');
         } catch (err) {
-            alert('Failed');
+            alert(err.response?.data?.error || 'Failed');
         }
         setLoading(false);
     };
