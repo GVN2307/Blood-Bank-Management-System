@@ -4,6 +4,10 @@ const { pool } = require('../db');
 
 // Get User Profile
 router.get('/profile/:id', async (req, res) => {
+    // IDOR Check
+    if (parseInt(req.params.id) !== req.user.id && req.user.type !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Access denied to other user profile' });
+    }
     try {
         const [rows] = await pool.query('SELECT id, name, email, phone, address, type FROM users WHERE id = ?', [req.params.id]);
         if (rows.length > 0) res.json(rows[0]);
@@ -15,6 +19,10 @@ router.get('/profile/:id', async (req, res) => {
 
 // Get User Test Requests
 router.get('/tests/:id', async (req, res) => {
+    // IDOR Check
+    if (parseInt(req.params.id) !== req.user.id && req.user.type !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Access denied to other user tests' });
+    }
     try {
         const [rows] = await pool.query(`
             SELECT tr.*, u.name as hospital_name 
@@ -30,13 +38,14 @@ router.get('/tests/:id', async (req, res) => {
 
 // Schedule a Test
 router.post('/tests', async (req, res) => {
-    const { userId, hospitalId, testType } = req.body;
+    const { hospitalId, testType } = req.body;
+    const userId = req.user.id; // Always use logged-in user's ID
     try {
         const [result] = await pool.query(
             'INSERT INTO test_requests (user_id, hospital_id, test_type) VALUES (?, ?, ?)',
             [userId, hospitalId, testType]
         );
-        res.json({ success: true, id: result.insertId });
+        res.json({ success: true, id: Array.isArray(result) ? result[0].insertId : result.insertId || result.lastID });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -44,6 +53,10 @@ router.post('/tests', async (req, res) => {
 
 // Get Donation History
 router.get('/donations/:id', async (req, res) => {
+    // IDOR Check
+    if (parseInt(req.params.id) !== req.user.id && req.user.type !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Access denied to other user donations' });
+    }
     try {
         const [rows] = await pool.query(`
             SELECT d.*, u.name as bloodbank_name 
