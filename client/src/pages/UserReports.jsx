@@ -1,52 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const TEST_DATA = [
     {
-        category: 'Blood Tests',
+        category: 'Blood Telemetry',
         tests: [
             {
                 name: 'Complete Blood Count (CBC)',
                 description: 'Evaluates overall health and detects specific disorders like anemia, infection, and leukemia.',
                 details: [
-                    { param: 'Red Blood Cells (RBC)', normal: '4.5 - 5.5 million/mcL', meaning: 'Carries oxygen. Low = Anemia; High = Polycythemia.' },
-                    { param: 'White Blood Cells (WBC)', normal: '4,500 - 11,000/mcL', meaning: 'Fights infection. High = Infection/Inflammation; Low = Weak Immune System.' },
-                    { param: 'Hemoglobin', normal: '13.8 - 17.2 g/dL (Men), 12.1 - 15.1 g/dL (Women)', meaning: 'Oxygen-carrying protein. Low = Anemia.' },
-                    { param: 'Platelets', normal: '150,000 - 450,000/mcL', meaning: 'Helps clotting. Low = Bleeding risk; High = Clotting risk.' }
-                ]
-            },
-            {
-                name: 'Basic Metabolic Panel (BMP)',
-                description: 'Measures sugar (glucose) level, electrolyte and fluid balance, and kidney function.',
-                details: [
-                    { param: 'Glucose', normal: '70 - 99 mg/dL (Fasting)', meaning: 'Blood sugar. High = Diabetes risk.' },
-                    { param: 'Calcium', normal: '8.5 - 10.2 mg/dL', meaning: 'Bone/Muscle health.' },
-                    { param: 'Creatinine', normal: '0.6 - 1.3 mg/dL', meaning: 'Kidney function indicator. High = Kidney issues.' }
-                ]
-            },
-            {
-                name: 'Lipid Panel',
-                description: 'Measures fats and fatty substances in your body.',
-                details: [
-                    { param: 'Total Cholesterol', normal: '< 200 mg/dL', meaning: 'Overall heart health.' },
-                    { param: 'LDL (Bad)', normal: '< 100 mg/dL', meaning: 'High levels increase heart disease risk.' },
-                    { param: 'HDL (Good)', normal: '> 60 mg/dL', meaning: 'Protects against heart disease.' }
+                    { param: 'Red Blood Cells (RBC)', normal: '4.5 - 5.5 million/mcL', meaning: 'Oxygen transmission. Low = Anemia; High = Polycythemia.' },
+                    { param: 'White Blood Cells (WBC)', normal: '4.5k - 11k/mcL', meaning: 'Immune response. High = Infection; Low = Weak immunity.' },
+                    { param: 'Hemoglobin', normal: '13.8 - 17.2 g/dL', meaning: 'Protein efficiency. Low = Anemia.' },
+                    { param: 'Platelets', normal: '150k - 450k/mcL', meaning: 'Coagulation efficiency. Low = Bleeding risk.' }
                 ]
             }
         ]
     },
     {
-        category: 'Urine Tests',
+        category: 'Metabolic Matrix',
         tests: [
             {
-                name: 'Urinalysis',
-                description: 'Detects and manages a wide range of disorders, such as urinary tract infections, kidney disease and diabetes.',
+                name: 'Basic Metabolic Panel (BMP)',
+                description: 'Measures sugar level, electrolyte balance, and kidney function.',
                 details: [
-                    { param: 'Color', normal: 'Pale yellow to amber', meaning: 'Dark = Dehydration; Red/Brown = Blood.' },
-                    { param: 'Clarity', normal: 'Clear', meaning: 'Cloudy = Infection.' },
-                    { param: 'pH', normal: '4.5 - 8.0', meaning: 'Acidity level.' },
-                    { param: 'Glucose', normal: 'Negative', meaning: 'Presence suggests diabetes.' },
-                    { param: 'Protein', normal: 'Negative or Trace', meaning: 'Positive suggests kidney stress.' }
+                    { param: 'Glucose', normal: '70 - 99 mg/dL', meaning: 'System fuel. High = Diabetes risk.' },
+                    { param: 'Calcium', normal: '8.5 - 10.2 mg/dL', meaning: 'Structural health.' },
+                    { param: 'Creatinine', normal: '0.6 - 1.3 mg/dL', meaning: 'Filtration efficiency.' }
                 ]
             }
         ]
@@ -55,44 +35,49 @@ const TEST_DATA = [
 
 function UserReports() {
     const navigate = useNavigate();
-    const [activeOriginalTab, setActiveOriginalTab] = useState(0);
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingBottom: '50px' }}>
-            <nav className="navbar container">
-                <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => navigate('/user-dashboard')}>
-                    <span className="logo-text">&larr; Dashboard</span>
-                </div>
-            </nav>
+        <div className="page-wrapper" style={{ padding: 0 }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            <div className="container">
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 className="gradient-text" style={{ fontSize: '3rem', marginBottom: '10px' }}>Medical Knowledge Base</h1>
-                    <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto' }}>
-                        Understanding your test results is the first step to better health. Browse our comprehensive guide below.
+            <div className="container animate-in" style={{ padding: '4rem 2rem' }}>
+                <button onClick={() => navigate('/user-dashboard')} className="premium-btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; BACK TO HUB</button>
+
+                <div style={{ marginBottom: '5rem' }}>
+                    <h1 className="title-gradient" style={{ fontSize: '4rem', marginBottom: '1rem' }}>Health Intelligence</h1>
+                    <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', maxWidth: '600px' }}>
+                        Deciphering the telemetry of your biological system for proactive care.
                     </p>
                 </div>
 
                 {TEST_DATA.map((category, catIndex) => (
-                    <div key={catIndex} style={{ marginBottom: '60px' }}>
-                        <h2 style={{ borderBottom: '1px solid var(--primary)', paddingBottom: '10px', display: 'inline-block', marginBottom: '30px' }}>
-                            {category.category}
-                        </h2>
+                    <div key={catIndex} style={{ marginBottom: '6rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '3rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', margin: 0, whiteSpace: 'nowrap' }} className="title-accent">{category.category.toUpperCase()}</h2>
+                            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, var(--border-glass), transparent)' }}></div>
+                        </div>
 
-                        <div style={{ display: 'grid', gap: '30px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
                             {category.tests.map((test, testIndex) => (
-                                <div key={testIndex} className="glass-panel" style={{ padding: '30px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                                        <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--secondary)' }}>{test.name}</h3>
+                                <div key={testIndex}>
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <h3 style={{ fontSize: '1.8rem', color: 'white', marginBottom: '0.5rem' }}>{test.name}</h3>
+                                        <p style={{ color: 'var(--text-dim)', maxWidth: '800px' }}>{test.description}</p>
                                     </div>
-                                    <p style={{ color: 'white', marginBottom: '30px', fontSize: '1.1rem' }}>{test.description}</p>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                    <div className="grid-cols-4" style={{ gap: '1.5rem' }}>
                                         {test.details.map((detail, dIndex) => (
-                                            <div key={dIndex} style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '12px', borderLeft: '3px solid var(--primary)' }}>
-                                                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '5px' }}>{detail.param}</div>
-                                                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '5px' }}>Normal: <span style={{ color: 'white' }}>{detail.normal}</span></div>
-                                                <div style={{ fontSize: '0.85rem', color: '#ff6b6b' }}>{detail.meaning}</div>
+                                            <div key={dIndex} className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-primary)' }}>
+                                                <div style={{ fontWeight: 'bold', fontSize: '1rem', color: 'white', marginBottom: '1rem' }}>{detail.param}</div>
+                                                <div style={{ marginBottom: '1rem' }}>
+                                                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Normal Range</p>
+                                                    <p style={{ fontSize: '0.9rem', color: 'white', fontWeight: 'bold' }}>{detail.normal}</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Diagnostic Insight</p>
+                                                    <p style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', lineHeight: '1.4' }}>{detail.meaning}</p>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -102,10 +87,10 @@ function UserReports() {
                     </div>
                 ))}
 
-                <div style={{ textAlign: 'center', marginTop: '60px', padding: '40px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px' }}>
-                    <h3>Need to schedule a test?</h3>
-                    <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Find nearest certified labs and hospitals instantly.</p>
-                    <button onClick={() => navigate('/test-schedule')} className="btn btn-primary">Book Now</button>
+                <div className="glass-card flex-center" style={{ padding: '5rem', flexDirection: 'column', border: '1px dashed var(--border-glass)' }}>
+                    <h2 style={{ marginBottom: '1rem' }}>Ready for a screening?</h2>
+                    <p style={{ color: 'var(--text-dim)', marginBottom: '2.5rem' }}>Book your prioritized appointment at a certified regional facility.</p>
+                    <button onClick={() => navigate('/test-schedule')} className="premium-btn btn-accent" style={{ padding: '1.2rem 4rem' }}>INITIALIZE BOOKING</button>
                 </div>
             </div>
         </div>
@@ -113,3 +98,4 @@ function UserReports() {
 }
 
 export default UserReports;
+

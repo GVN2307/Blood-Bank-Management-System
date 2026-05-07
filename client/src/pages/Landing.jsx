@@ -5,56 +5,97 @@ function Landing() {
     const navigate = useNavigate();
 
     return (
-        <div className="hero-wrapper">
-            {/* Background with Blend Mode */}
-            <div className="hero-bg">
-                <img src="/assets/home.jpeg" alt="Medical Network" />
-            </div>
-            <div className="hero-overlay"></div>
+        <div className="page-wrapper" style={{ padding: 0, maxWidth: 'none' }}>
+            {/* Dynamic Backgrounds */}
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            <div className="container hero-content">
-                <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: '50px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', marginBottom: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <span style={{ color: '#00f2ea', marginRight: '8px' }}>●</span> Online • Telangana Health Grid
+            {/* Hero Section */}
+            <section style={{ 
+                position: 'relative', 
+                minHeight: '100vh', 
+                display: 'flex', 
+                alignItems: 'center',
+                overflow: 'hidden'
+            }}>
+                {/* Background Image with Overlay */}
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    zIndex: -1
+                }}>
+                    <img 
+                        src="/blood_bank_hero_bg_1778141203099.png" 
+                        alt="Hero Background" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }}
+                    />
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'radial-gradient(circle at 30% 50%, transparent 0%, var(--bg-dark) 80%)'
+                    }}></div>
                 </div>
 
-                <h1 style={{ fontSize: '5.5rem', margin: '0 0 24px 0', lineHeight: 1.1 }}>
-                    The Heart of <br />
-                    <span className="gradient-text-primary">Emergency Care</span>
-                </h1>
+                <div className="page-wrapper animate-in" style={{ marginTop: 0 }}>
+                    <div className="nav-dock">
+                        <div className="flex-center" style={{ gap: '10px' }}>
+                            <div style={{ width: '32px', height: '32px', background: 'var(--accent-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ color: 'white', fontWeight: 'bold' }}>L</span>
+                            </div>
+                            <h2 style={{ fontSize: '1.5rem' }}>Life<span style={{ color: 'var(--accent-primary)' }}>Link</span></h2>
+                        </div>
+                        <div className="flex-center" style={{ gap: '2rem' }}>
+                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-dim)', cursor: 'pointer' }}>Network</span>
+                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-dim)', cursor: 'pointer' }}>Stats</span>
+                            <button onClick={() => navigate('/login')} className="premium-btn btn-accent" style={{ padding: '0.5rem 1.5rem', fontSize: '0.8rem' }}>Login</button>
+                        </div>
+                    </div>
 
-                <p style={{ fontSize: '1.4rem', color: '#ccc', maxWidth: '600px', lineHeight: 1.6, marginBottom: '40px' }}>
-                    LifeLink connects every hospital and blood bank in Telangana into a single, intelligent nervous system. Real-time location tracking. Instant automated alerts. Zero latency.
-                </p>
+                    <div style={{ maxWidth: '800px', marginTop: '4rem' }}>
+                        <div className="stat-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '2rem' }}>
+                            <span style={{ width: '8px', height: '8px', background: 'var(--accent-primary)', borderRadius: '50%' }}></span>
+                            LIVE: TELANGANA EMERGENCY GRID ACTIVE
+                        </div>
 
-                <div style={{ display: 'flex', gap: '20px' }}>
-                    <button onClick={() => navigate('/login')} className="btn btn-primary" style={{ minWidth: '180px' }}>
-                        Access Portal
-                    </button>
-                    <button className="btn" style={{ background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', minWidth: '180px' }}>
-                        View Live Map
-                    </button>
+                        <h1 style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', lineHeight: 1, marginBottom: '2rem' }}>
+                            <span className="title-gradient">The Pulse of</span> <br />
+                            <span className="title-accent">Emergency Care</span>
+                        </h1>
+
+                        <p style={{ fontSize: '1.25rem', color: 'var(--text-dim)', maxWidth: '600px', marginBottom: '3rem' }}>
+                            LifeLink is an intelligent nervous system connecting every hospital and blood bank. 
+                            Real-time tracking, zero-latency response, and a single goal: Saving Lives.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '1.5rem' }}>
+                            <button onClick={() => navigate('/register')} className="premium-btn btn-accent" style={{ padding: '1.2rem 3rem' }}>
+                                Join the Network
+                            </button>
+                            <button onClick={() => navigate('/community')} className="premium-btn btn-outline" style={{ padding: '1.2rem 3rem' }}>
+                                View Analytics
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Quick Stats */}
+                    <div className="grid-cols-4" style={{ marginTop: '8rem' }}>
+                        {[
+                            { label: 'Hospitals Linked', value: '48+', accent: 'var(--accent-secondary)' },
+                            { label: 'Blood Units', value: '1.2k', accent: 'var(--accent-primary)' },
+                            { label: 'Response Time', value: '< 2m', accent: 'var(--accent-tertiary)' },
+                            { label: 'Saved Lives', value: '850+', accent: '#10B981' }
+                        ].map((stat, i) => (
+                            <div key={i} className="glass-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                                <h3 style={{ fontSize: '2.5rem', color: stat.accent, marginBottom: '0.5rem' }}>{stat.value}</h3>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{stat.label}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-
-                {/* Stats Strip */}
-                <div className="glass-panel" style={{ marginTop: '80px', padding: '30px', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2.5rem', margin: 0, color: 'white' }}>42+</h3>
-                        <small style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Hospitals Linked</small>
-                    </div>
-                    <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <div style={{ textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2.5rem', margin: 0, color: 'white' }}>12</h3>
-                        <small style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Blood Banks</small>
-                    </div>
-                    <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <div style={{ textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '2.5rem', margin: 0, color: '#00f2ea' }}>24/7</h3>
-                        <small style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Active Monitoring</small>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
     );
 }
 
 export default Landing;
+

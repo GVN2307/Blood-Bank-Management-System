@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import io from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-
-const socket = io('http://localhost:3000');
 
 function HospitalDashboard() {
     const [bloodBanks, setBloodBanks] = useState([]);
@@ -27,239 +23,300 @@ function HospitalDashboard() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        if (!user || user.type !== 'hospital') navigate('/login');
+        if (!user || user.type !== 'hospital') {
+            navigate('/login');
+            return;
+        }
 
-        const token = localStorage.getItem('token');
-        axios.get('http://localhost:3000/api/bloodbanks', {
-            headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get('/bloodbanks')
             .then(res => setBloodBanks(res.data))
-            .catch(err => console.error(err));
+            .catch(err => console.error('Fetch Banks Error:', err));
 
-        socket.emit('join_room', 'hospital');
-    }, []);
+        if (window.location.hostname === 'localhost') {
+            const socket = io('http://localhost:3000');
+            socket.emit('join_room', 'hospital');
+            return () => socket.disconnect();
+        }
+    }, [navigate]);
 
     const handleRequest = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const token = localStorage.getItem('token');
         try {
-            await axios.post('http://localhost:3000/api/request', {
+            await api.post('/request', {
                 bloodGroup: request.bloodGroup,
                 units: request.units
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Broadcast Successful');
+            alert('Emergency Broadcast Transmitted');
         } catch (err) {
-            alert(err.response?.data?.error || 'Failed');
+            alert(err.response?.data?.error || 'Transmission failed');
         }
         setLoading(false);
     };
 
-    return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingBottom: '50px' }}>
-            <div className="dashboard-header">
-                <img src="/assets/dashboard.jpeg" alt="Header" />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), #020204)' }}></div>
-                <div className="container" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'flex-end', paddingBottom: '80px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end' }}>
-                        <div>
-                            <h2 style={{ margin: 0, opacity: 0.7 }}>Hospital Console</h2>
-                            <h1 style={{ fontSize: '3rem', margin: 0 }}>{user?.name}</h1>
-                        </div>
-                        <button onClick={() => navigate('/')} className="btn" style={{ background: 'rgba(255,255,255,0.1)' }}>Logout</button>
-                    </div>
-                </div>
-            </div>
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/');
+    };
 
-            <div className="container dashboard-content-wrapper">
-                {/* Navigation Tabs */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+    return (
+        <div className="page-wrapper" style={{ padding: 0, display: 'flex' }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
+
+            {/* Sidebar */}
+            <div style={{ width: '300px', background: 'rgba(5, 7, 10, 0.8)', backdropFilter: 'blur(20px)', borderRight: '1px solid var(--border-glass)', z_index: 100, height: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ marginBottom: '3rem' }}>
+                    <h1 style={{ fontSize: '1.5rem', margin: 0 }} className="title-gradient">LifeLink</h1>
+                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>HOSPITAL NODE</p>
+                </div>
+
+                <div style={{ flex: 1 }}>
                     {['console', 'patients', 'history', 'needs'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
+                            className="premium-btn"
                             style={{
-                                padding: '12px 24px',
-                                borderRadius: '30px',
-                                border: '1px solid var(--glass-border)',
-                                background: activeTab === tab ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                textTransform: 'capitalize'
+                                width: '100%',
+                                justifyContent: 'flex-start',
+                                marginBottom: '0.5rem',
+                                background: activeTab === tab ? 'rgba(255, 59, 59, 0.1)' : 'transparent',
+                                borderColor: activeTab === tab ? 'var(--accent-primary)' : 'transparent',
+                                color: activeTab === tab ? 'white' : 'var(--text-dim)'
                             }}
                         >
-                            {tab}
+                            {tab.toUpperCase()}
                         </button>
                     ))}
                 </div>
 
+                <div className="glass-card" style={{ padding: '1rem', marginTop: '2rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: 'bold' }}>{user?.name}</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>ID: {user?.id?.toString().slice(0, 8)}</p>
+                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>DISCONNECT</button>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '3rem', position: 'relative' }}>
+                <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h2 className="title-gradient" style={{ fontSize: '2.5rem' }}>Tactical Overview</h2>
+                        <p style={{ color: 'var(--text-dim)' }}>Real-time coordination and resource management.</p>
+                    </div>
+                </div>
+
                 {activeTab === 'console' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '30px' }}>
-                        {/* Main Area */}
-                        <div>
-                            <div className="glass-panel" style={{ padding: '0', overflow: 'hidden', height: '600px', display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ padding: '20px', borderBottom: 'var(--glass-border)' }}>
-                                    <h3 style={{ margin: 0 }}>Active Blood Bank Reconnaissance</h3>
-                                </div>
-                                <MapContainer center={[17.3850, 78.4867]} zoom={12} scrollWheelZoom={false} style={{ flex: 1, width: '100%' }}>
-                                    <TileLayer
-                                        attribution='&copy; OpenStreetMap'
-                                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                                    />
-                                    {user?.latitude && (
-                                        <Marker position={[user.latitude, user.longitude]}>
-                                            <Popup>Your Location: {user.name}</Popup>
-                                        </Marker>
-                                    )}
-                                    {bloodBanks.map(bb => (
-                                        <Marker key={bb.id} position={[bb.latitude, bb.longitude]}>
-                                            <Popup>
+                    <div className="grid-cols-2" style={{ gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
+                        <div className="glass-card" style={{ padding: 0, overflow: 'hidden', height: '600px' }}>
+                            <MapContainer center={[17.3850, 78.4867]} zoom={12} style={{ height: '100%', width: '100%' }}>
+                                <TileLayer
+                                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                />
+                                {bloodBanks.map(bb => (
+                                    <Marker key={bb.id} position={[bb.lat || 17.3850, bb.lng || 78.4867]}>
+                                        <Popup>
+                                            <div style={{ color: '#000' }}>
                                                 <strong>{bb.name}</strong><br />
                                                 {bb.phone}
-                                            </Popup>
-                                        </Marker>
-                                    ))}
-                                </MapContainer>
-                            </div>
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                ))}
+                            </MapContainer>
                         </div>
 
-                        {/* Sidebar Controls */}
-                        <div className="glass-panel" style={{ padding: '30px', height: 'fit-content' }}>
-                            <h3 className="gradient-text-primary" style={{ marginTop: 0 }}>INITIATE SOS</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#888', marginBottom: '30px' }}>
-                                This action will trigger an Immediate Response Alert to all {bloodBanks.length} connected blood banks.
+                        <div className="glass-card">
+                            <h3 className="title-gradient" style={{ marginBottom: '1.5rem' }}>Emergency Broadcast</h3>
+                            <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '2rem' }}>
+                                Deploy an SOS to all connected blood banks within the Telangana Health Grid.
                             </p>
 
                             <form onSubmit={handleRequest}>
-                                <div className="input-group">
-                                    <label style={{ display: 'block', marginBottom: '10px', color: '#ccc' }}>Blood Type</label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                <div className="input-container">
+                                    <label>BLOOD CLASSIFICATION</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                                         {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
-                                            <div
+                                            <button
                                                 key={bg}
+                                                type="button"
                                                 onClick={() => setRequest({ ...request, bloodGroup: bg })}
                                                 style={{
-                                                    padding: '10px 0',
-                                                    textAlign: 'center',
-                                                    background: request.bloodGroup === bg ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                                                    padding: '0.75rem 0',
+                                                    background: request.bloodGroup === bg ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                                                    border: '1px solid',
+                                                    borderColor: request.bloodGroup === bg ? 'var(--accent-primary)' : 'var(--border-glass)',
                                                     borderRadius: '8px',
-                                                    cursor: 'pointer',
+                                                    color: 'white',
                                                     fontWeight: 'bold',
-                                                    fontSize: '0.9rem',
-                                                    transition: 'all 0.2s'
+                                                    cursor: 'pointer'
                                                 }}
                                             >
                                                 {bg}
-                                            </div>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="input-group">
+                                <div className="input-container">
+                                    <label>REQUIRED QUANTITY (UNITS)</label>
                                     <input
-                                        className="styled-input"
+                                        className="premium-input"
                                         type="number"
                                         value={request.units}
                                         onChange={e => setRequest({ ...request, units: e.target.value })}
-                                        placeholder=" "
                                     />
-                                    <label className="input-label">Units Required</label>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
-                                    {loading ? 'BROADCASTING...' : 'TRANSMIT ALERT'}
+                                <button type="submit" className="premium-btn btn-accent" style={{ width: '100%', padding: '1rem' }} disabled={loading}>
+                                    {loading ? 'TRANSMITTING...' : 'INITIATE SOS'}
                                 </button>
                             </form>
-
-                            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: 'var(--glass-border)' }}>
-                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', opacity: 0.6 }}>
-                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0f0' }}></div>
-                                    <small>System Operational</small>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'patients' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                            <h2>Patient List</h2>
-                            <button className="btn btn-primary">Add Patient</button>
-                        </div>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <th style={{ padding: '15px' }}>Name</th>
-                                    <th style={{ padding: '15px' }}>Condition</th>
-                                    <th style={{ padding: '15px' }}>Blood Group</th>
-                                    <th style={{ padding: '15px' }}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { name: 'John Doe', condition: 'Surgery', bg: 'A+', status: 'Stable' },
-                                    { name: 'Jane Smith', condition: 'Trauma', bg: 'O-', status: 'Critical' },
-                                    { name: 'Robert B', condition: 'Anemia', bg: 'B+', status: 'Stable' }
-                                ].map((p, i) => (
-                                    <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <td style={{ padding: '15px' }}>{p.name}</td>
-                                        <td style={{ padding: '15px' }}>{p.condition}</td>
-                                        <td style={{ padding: '15px', color: 'var(--primary)', fontWeight: 'bold' }}>{p.bg}</td>
-                                        <td style={{ padding: '15px' }}>{p.status}</td>
+                    <div className="animate-in">
+                        <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <table className="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>PATIENT ID</th>
+                                        <th>NAME</th>
+                                        <th>BLOOD TYPE</th>
+                                        <th>STATUS</th>
+                                        <th>ADMISSION DATE</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { id: 'P-1024', name: 'Rahul Sharma', group: 'O+', status: 'CRITICAL', date: '2024-05-01' },
+                                        { id: 'P-1025', name: 'Sita Devi', group: 'AB-', status: 'STABLE', date: '2024-05-03' },
+                                        { id: 'P-1026', name: 'John Doe', group: 'B+', status: 'WAITING', date: '2024-05-06' }
+                                    ].map(p => (
+                                        <tr key={p.id}>
+                                            <td style={{ opacity: 0.5 }}>{p.id}</td>
+                                            <td>{p.name}</td>
+                                            <td style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>{p.group}</td>
+                                            <td>
+                                                <span style={{ 
+                                                    padding: '2px 8px', 
+                                                    borderRadius: '4px', 
+                                                    fontSize: '0.7rem', 
+                                                    background: p.status === 'CRITICAL' ? 'rgba(255, 59, 59, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                                                    color: p.status === 'CRITICAL' ? '#ff3b3b' : '#10b981',
+                                                    border: `1px solid ${p.status === 'CRITICAL' ? 'rgba(255, 59, 59, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`
+                                                }}>
+                                                    {p.status}
+                                                </span>
+                                            </td>
+                                            <td style={{ color: 'var(--text-dim)' }}>{p.date}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 
                 {activeTab === 'history' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <h2>Request History</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                            <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <th style={{ padding: '15px' }}>Date</th>
-                                    <th style={{ padding: '15px' }}>Blood Group</th>
-                                    <th style={{ padding: '15px' }}>Units</th>
-                                    <th style={{ padding: '15px' }}>Fulfilled By</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '15px' }}>2025-10-12</td>
-                                    <td style={{ padding: '15px' }}>A+</td>
-                                    <td style={{ padding: '15px' }}>2</td>
-                                    <td style={{ padding: '15px' }}>Indian Red Cross</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-
-                {activeTab === 'needs' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <h2>Annual Blood Needs</h2>
-                        <div style={{ display: 'flex', gap: '30px', marginTop: '30px' }}>
-                            <div style={{ flex: 1, textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
-                                <h1 style={{ color: 'var(--primary)', fontSize: '3rem' }}>1,500 <span style={{ fontSize: '1rem', color: '#888' }}>units</span></h1>
-                                <p>Projected Requirement (2026)</p>
-                            </div>
-                            <div style={{ flex: 1, textAlign: 'center', padding: '30px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
-                                <h1 style={{ color: 'var(--secondary)', fontSize: '3rem' }}>450 <span style={{ fontSize: '1rem', color: '#888' }}>units</span></h1>
-                                <p>Current Stock (In-House)</p>
-                            </div>
+                    <div className="animate-in">
+                        <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <table className="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>REQUEST ID</th>
+                                        <th>TYPE</th>
+                                        <th>UNITS</th>
+                                        <th>DISPATCH NODE</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { id: 'REQ-001', type: 'A+', units: 2, node: 'Red Cross IRCS', status: 'FULFILLED' },
+                                        { id: 'REQ-002', type: 'O-', units: 5, node: 'Apollo Central', status: 'PENDING' },
+                                        { id: 'REQ-003', type: 'B+', units: 1, node: 'NIMS Blood Bank', status: 'CANCELLED' }
+                                    ].map(r => (
+                                        <tr key={r.id}>
+                                            <td style={{ opacity: 0.5 }}>{r.id}</td>
+                                            <td>{r.type}</td>
+                                            <td>{r.units}</td>
+                                            <td>{r.node}</td>
+                                            <td>{r.status}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}
 
+                {activeTab === 'needs' && (
+                    <div className="grid-cols-2 animate-in" style={{ gap: '2rem' }}>
+                        <div className="glass-card" style={{ padding: '2rem' }}>
+                            <h3 style={{ marginBottom: '1.5rem' }}>Forecasting Analytics</h3>
+                            <div style={{ height: '240px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', padding: '1rem', position: 'relative', overflow: 'hidden' }}>
+                                <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="var(--accent-primary)" stopOpacity="0.3" />
+                                            <stop offset="100%" stopColor="var(--accent-primary)" stopOpacity="0" />
+                                        </linearGradient>
+                                    </defs>
+                                    {/* Grid lines */}
+                                    {[0, 50, 100, 150].map(y => (
+                                        <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                                    ))}
+                                    {/* Area chart */}
+                                    <path d="M0,180 Q50,140 100,160 T200,80 T300,100 T400,40 L400,200 L0,200 Z" fill="url(#chartGradient)" />
+                                    {/* Line chart */}
+                                    <path d="M0,180 Q50,140 100,160 T200,80 T300,100 T400,40" fill="none" stroke="var(--accent-primary)" strokeWidth="3" strokeLinecap="round" />
+                                    {/* Dots */}
+                                    {[
+                                        { x: 0, y: 180 }, { x: 100, y: 160 }, { x: 200, y: 80 }, { x: 300, y: 100 }, { x: 400, y: 40 }
+                                    ].map((p, i) => (
+                                        <circle key={i} cx={p.x} cy={p.y} r="4" fill="white" />
+                                    ))}
+                                </svg>
+                                <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', color: 'var(--text-dim)' }}>PROJECTED DEMAND INCREASING</div>
+                            </div>
+                        </div>
+                        <div className="glass-card" style={{ padding: '2rem' }}>
+                            <h3 style={{ marginBottom: '1.5rem' }}>Strategic Shortage Alerts</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {[
+                                    { type: 'O-', level: 'CRITICAL', req: 12 },
+                                    { type: 'AB-', level: 'LOW', req: 5 },
+                                    { type: 'B-', level: 'URGENT', req: 8 }
+                                ].map(item => (
+                                    <div key={item.type} style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center',
+                                        gap: '1.5rem',
+                                        padding: '1.25rem', 
+                                        background: 'rgba(255, 59, 59, 0.05)', 
+                                        borderRadius: '8px', 
+                                        border: `1px solid ${item.level === 'CRITICAL' ? 'rgba(255, 59, 59, 0.2)' : 'rgba(255, 59, 59, 0.1)'}`
+                                    }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255, 59, 59, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--accent-primary)' }}>{item.type}</div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{item.level} SHORTAGE</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Requirement: {item.req} Units</div>
+                                        </div>
+                                        <button className="premium-btn btn-accent" style={{ padding: '0.4rem 1rem', fontSize: '0.7rem' }}>DISPATCH</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
 export default HospitalDashboard;
+

@@ -1,42 +1,63 @@
 const sqlite3 = require('sqlite3').verbose();
 const { open } = require('sqlite');
 const path = require('path');
+const { Pool } = require('pg');
 
 let db;
+let pgPool;
+
+// Database Configuration
+const isPostgres = process.env.DATABASE_URL || process.env.PGHOST;
 
 async function getDB() {
-  if (db) return db;
-  db = await open({
-    filename: path.join(__dirname, 'bloodbank.db'),
-    driver: sqlite3.Database
-  });
-  return db;
+    if (isPostgres) return null; // Use pgPool instead
+    if (db) return db;
+    db = await open({
+        filename: path.join(__dirname, 'bloodbank.db'),
+        driver: sqlite3.Database
+    });
+    return db;
 }
 
-// Wrapper to mimic mysql2's [rows] return style
+if (isPostgres) {
+    pgPool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+    });
+    console.log('🐘 PostgreSQL Pool Initialized');
+}
+
+// Unified Query Wrapper
 const pool = {
-  query: async (sql, params) => {
-    const db = await getDB();
-    // Insert/Update/Delete return specific objects in sqlite, Select returns array
-    if (sql.trim().toUpperCase().startsWith('SELECT')) {
-      const rows = await db.all(sql, params);
-      return [rows]; // Wrap in array to match [rows] from mysql2
-    } else {
-      const result = await db.run(sql, params);
-      return [result];
+    query: async (sql, params) => {
+        if (isPostgres) {
+            // Postgres uses $1, $2 instead of ?
+            let pgSql = sql;
+            let count = 1;
+            pgSql = sql.replace(/\?/g, () => `$${count++}`);
+            const result = await pgPool.query(pgSql, params);
+            return [result.rows, result];
+        } else {
+            const db = await getDB();
+            if (sql.trim().toUpperCase().startsWith('SELECT')) {
+                const rows = await db.all(sql, params);
+                return [rows];
+            } else {
+                const result = await db.run(sql, params);
+                return [result];
+            }
+        }
     }
-  }
 };
 
 async function initDB() {
-  try {
-    const db = await getDB();
-    console.log('⚡ Initializing SQLite Database...');
-
-    await db.exec(`
+    try {
+        console.log(`⚡ Initializing ${isPostgres ? 'PostgreSQL' : 'SQLite'} Database...`);
+        
+        const schema = `
             CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                type TEXT CHECK(type IN ('hospital', 'bloodbank', 'user', 'admin')) NOT NULL,
+                id SERIAL PRIMARY KEY,
+                type TEXT NOT NULL,
                 name TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
@@ -44,100 +65,108 @@ async function initDB() {
                 latitude REAL,
                 longitude REAL,
                 phone TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE TABLE IF NOT EXISTS inventory (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                bloodbank_id INTEGER,
+                id SERIAL PRIMARY KEY,
+                bloodbank_id INTEGER REFERENCES users(id),
                 blood_group TEXT NOT NULL,
-                units INTEGER DEFAULT 0,
-                FOREIGN KEY (bloodbank_id) REFERENCES users(id)
+                units INTEGER DEFAULT 0
             );
 
             CREATE TABLE IF NOT EXISTS requests (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                hospital_id INTEGER,
+                id SERIAL PRIMARY KEY,
+                hospital_id INTEGER REFERENCES users(id),
                 blood_group TEXT NOT NULL,
                 units INTEGER NOT NULL,
-                status TEXT CHECK(status IN ('pending', 'fulfilled', 'cancelled')) DEFAULT 'pending',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (hospital_id) REFERENCES users(id)
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS test_requests (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                hospital_id INTEGER REFERENCES users(id),
+                test_type TEXT NOT NULL,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
             CREATE TABLE IF NOT EXISTS donations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                bloodbank_id INTEGER,
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                bloodbank_id INTEGER REFERENCES users(id),
                 units INTEGER DEFAULT 1,
                 donation_date DATE NOT NULL,
-                status TEXT CHECK(status IN ('scheduled', 'completed', 'cancelled')) DEFAULT 'scheduled',
-                FOREIGN KEY (user_id) REFERENCES users(id),
-                FOREIGN KEY (bloodbank_id) REFERENCES users(id)
+                status TEXT DEFAULT 'scheduled'
             );
 
             CREATE TABLE IF NOT EXISTS events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                bloodbank_id INTEGER,
+                id SERIAL PRIMARY KEY,
+                bloodbank_id INTEGER REFERENCES users(id),
                 title TEXT NOT NULL,
                 description TEXT,
                 event_date DATE,
-                location TEXT,
-                FOREIGN KEY (bloodbank_id) REFERENCES users(id)
+                location TEXT
             );
-        `);
+        `;
 
-    const usersCount = await db.all('SELECT count(*) as count FROM users');
-    if (usersCount[0].count === 0) {
-      console.log('🌱 Seeding Data with Hashed Passwords...');
-      const bcrypt = require('bcryptjs');
-      const salt = await bcrypt.genSalt(10);
+        // SQLite Specific adjustments for SERIAL and TIMESTAMP
+        let runSchema = schema;
+        if (!isPostgres) {
+            runSchema = schema
+                .replace(/SERIAL PRIMARY KEY/g, 'INTEGER PRIMARY KEY AUTOINCREMENT')
+                .replace(/TIMESTAMP DEFAULT CURRENT_TIMESTAMP/g, 'DATETIME DEFAULT CURRENT_TIMESTAMP')
+                .replace(/REFERENCES users\(id\)/g, ''); // SQLite constraints are handled differently in simple scripts
+            
+            const db = await getDB();
+            await db.exec(runSchema);
+        } else {
+            await pgPool.query(runSchema);
+        }
 
-      const seedUsers = [
-        ['hospital', 'NIMS Hyderabad', 'admin@nims.edu.in', 'password123', 'Punjagutta, Hyderabad', 17.4116, 78.4489, '040-23489000'],
-        ['hospital', 'Apollo Hospitals Jubilee Hills', 'info@apollo.com', 'password123', 'Film Nagar, Hyderabad', 17.4156, 78.4077, '040-23607777'],
-        ['bloodbank', 'Indian Red Cross Society', 'redcross@gmail.com', 'password123', 'Vidya Nagar, Hyderabad', 17.4042, 78.5026, '040-27633087'],
-        ['bloodbank', 'Chiranjeevi Blood Bank', 'cbb@gmail.com', 'password123', 'Jubilee Hills, Hyderabad', 17.4265, 78.4128, '040-23547209'],
-        ['bloodbank', 'NTR Trust Blood Bank', 'ntr@trust.org', 'password123', 'Banjara Hills, Hyderabad', 17.4107, 78.4356, '040-30799999'],
-        ['admin', 'System Admin', 'admin@lifelink.com', 'admin123', 'Hyderabad', 17.3850, 78.4867, '9999999999'],
-        ['user', 'Ravi Kumar', 'ravi@gmail.com', 'password123', 'Kukatpally, Hyderabad', 17.4875, 78.3953, '9876543210']
-      ];
+        // Seeding Logic
+        const [usersCount] = await pool.query('SELECT count(*) as count FROM users');
+        if (parseInt(usersCount[0].count) === 0) {
+            console.log('🌱 Seeding Data...');
+            const bcrypt = require('bcryptjs');
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('password123', salt);
+            const adminPassword = await bcrypt.hash('admin123', salt);
 
-      for (const u of seedUsers) {
-        const hashedPassword = await bcrypt.hash(u[3], salt);
-        await db.run(
-          'INSERT INTO users (type, name, email, password, address, latitude, longitude, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-          [u[0], u[1], u[2], hashedPassword, u[4], u[5], u[6], u[7]]
-        );
-      }
+            const seedUsers = [
+                ['hospital', 'NIMS Hyderabad', 'admin@nims.edu.in', hashedPassword, 'Punjagutta, Hyderabad', 17.4116, 78.4489, '040-23489000'],
+                ['bloodbank', 'Indian Red Cross Society', 'redcross@gmail.com', hashedPassword, 'Vidya Nagar, Hyderabad', 17.4042, 78.5026, '040-27633087'],
+                ['admin', 'System Admin', 'admin@lifelink.com', adminPassword, 'Hyderabad', 17.3850, 78.4867, '9999999999']
+            ];
 
-      await db.exec(`
-                INSERT INTO inventory (bloodbank_id, blood_group, units) VALUES 
-                (3, 'A+', 10), (3, 'O+', 15), (3, 'B-', 5),
-                (4, 'AB+', 8), (4, 'O-', 2),
-                (5, 'A+', 20), (5, 'B+', 12);
-
-                INSERT INTO events (bloodbank_id, title, description, event_date, location) VALUES
-                (3, 'Blood Donation Camp', 'Mega donation camp at OU Campus.', '2023-11-15', 'Osmania University, Hyderabad'),
-                (4, 'Health Awareness Run', '5K run for heart health.', '2023-12-01', 'KBR Park, Hyderabad');
-            `);
+            for (const u of seedUsers) {
+                await pool.query(
+                    'INSERT INTO users (type, name, email, password, address, latitude, longitude, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    u
+                );
+            }
+        }
+    } catch (err) {
+        console.error('Initialisation Error:', err);
     }
-
-  } catch (err) {
-    console.error('Initialisation Error:', err);
-  }
 }
 
-// Compatibility function
 async function checkConnection() {
-  try {
-    await getDB();
-    console.log('✅ Connected to SQLite Database');
-    return true;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
+    try {
+        if (isPostgres) {
+            await pgPool.query('SELECT 1');
+        } else {
+            await getDB();
+        }
+        console.log('✅ Database Connection Verified');
+        return true;
+    } catch (e) {
+        console.error('❌ Database Connection Failed:', e.message);
+        return false;
+    }
 }
 
 module.exports = { pool, checkConnection, initDB };
+

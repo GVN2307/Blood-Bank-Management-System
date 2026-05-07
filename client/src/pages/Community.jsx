@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LEADERS = [
-    { name: 'Ravi Kumar', units: 45, badge: 'Gold Donor' },
-    { name: 'Sita Reddy', units: 32, badge: 'Silver Donor' },
-    { name: 'Arjun Das', units: 28, badge: 'Silver Donor' },
-    { name: 'Priya S', units: 15, badge: 'Bronze Donor' },
-    { name: 'Mohammed Ali', units: 12, badge: 'Bronze Donor' }
+    { name: 'Ravi Kumar', units: 45, badge: 'Gold Donor', color: '#ffd700' },
+    { name: 'Sita Reddy', units: 32, badge: 'Silver Donor', color: '#c0c0c0' },
+    { name: 'Arjun Das', units: 28, badge: 'Silver Donor', color: '#c0c0c0' },
+    { name: 'Priya S', units: 15, badge: 'Bronze Donor', color: '#cd7f32' },
+    { name: 'Mohammed Ali', units: 12, badge: 'Bronze Donor', color: '#cd7f32' }
 ];
 
 const STORIES = [
@@ -18,73 +18,80 @@ function Community() {
     const navigate = useNavigate();
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingBottom: '50px' }}>
-            <nav className="navbar container">
-                <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => navigate('/user-dashboard')}>
-                    <span className="logo-text">&larr; Dashboard</span>
-                </div>
-            </nav>
+        <div className="page-wrapper" style={{ padding: 0 }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            <div className="container" style={{ marginTop: '20px' }}>
-                <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', marginBottom: '40px', background: 'linear-gradient(135deg, rgba(250, 0, 63, 0.2), rgba(0,0,0,0))' }}>
-                    <h1 style={{ fontSize: '3rem', margin: 0 }}>Community Heroes</h1>
-                    <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '10px auto' }}>
-                        Celebrating the heroes who save lives every day. Join the leaderboard by donating today.
+            <div className="container animate-in" style={{ padding: '4rem 2rem' }}>
+                <button onClick={() => navigate('/user-dashboard')} className="premium-btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; BACK TO HUB</button>
+
+                <div style={{ marginBottom: '4rem' }}>
+                    <h1 className="title-gradient" style={{ fontSize: '4rem', marginBottom: '1rem' }}>Community Heroes</h1>
+                    <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', maxWidth: '600px' }}>
+                        Celebrating the champions of the Telangana Health Grid.
                     </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px' }}>
+                <div className="grid-cols-2" style={{ gap: '4rem', alignItems: 'start' }}>
                     {/* Leaderboard */}
                     <div>
-                        <h2 className="gradient-text">Top Donors (Telangana)</h2>
-                        <div className="glass-panel" style={{ padding: '0' }}>
+                        <h2 className="title-accent" style={{ marginBottom: '2rem' }}>TOP DONORS</h2>
+                        <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                             {LEADERS.map((leader, index) => (
                                 <div key={index} style={{
-                                    padding: '20px',
-                                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                    padding: '1.5rem 2rem',
+                                    borderBottom: '1px solid var(--border-glass)',
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    background: index === 0 ? 'rgba(255, 215, 0, 0.1)' : 'transparent'
+                                    background: index === 0 ? 'rgba(255, 215, 0, 0.05)' : 'transparent'
                                 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                                         <div style={{
-                                            width: '40px', height: '40px', borderRadius: '50%',
-                                            background: index === 0 ? '#ffd700' : (index === 1 ? '#c0c0c0' : '#cd7f32'),
-                                            color: 'black', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                            width: '40px', height: '40px', borderRadius: '10px',
+                                            background: leader.color,
+                                            color: 'black', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            boxShadow: `0 0 20px ${leader.color}44`
                                         }}>
                                             {index + 1}
                                         </div>
                                         <div>
-                                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{leader.name}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{leader.badge}</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'white' }}>{leader.name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{leader.badge}</div>
                                         </div>
                                     </div>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--primary)' }}>{leader.units} Units</div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{leader.units}</div>
+                                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>UNITS</div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Stories */}
-                    <div>
-                        <h2 className="gradient-text">Real Stories</h2>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {STORIES.map((story, index) => (
-                                <div key={index} className="glass-panel" style={{ padding: '25px' }}>
-                                    <p style={{ fontStyle: 'italic', fontSize: '1.1rem', lineHeight: '1.6' }}>"{story.story}"</p>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px' }}>
-                                        <span style={{ fontWeight: 'bold', color: 'var(--secondary)' }}>- {story.name}</span>
-                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{story.date}</span>
-                                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                        <h2 className="title-accent">IMPACT STORIES</h2>
+                        {STORIES.map((story, index) => (
+                            <div key={index} className="glass-card" style={{ padding: '2rem' }}>
+                                <p style={{ fontSize: '1.1rem', lineHeight: '1.7', color: 'white', marginBottom: '1.5rem' }}>"{story.story}"</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-glass)', paddingTop: '1rem' }}>
+                                    <span style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '0.9rem' }}>{story.name}</span>
+                                    <span style={{ color: 'var(--text-dim)', fontSize: '0.7rem' }}>{story.date}</span>
                                 </div>
-                            ))}
-
-                            <div className="glass-panel" style={{ padding: '30px', textAlign: 'center', border: '1px dashed var(--text-muted)' }}>
-                                <h3 style={{ margin: 0 }}>Share your story</h3>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Inspire others to donate.</p>
-                                <button className="btn" style={{ marginTop: '10px', background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.9rem' }}>Write a Post</button>
                             </div>
+                        ))}
+
+                        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border-glass)' }}>
+                            <h3 style={{ marginBottom: '0.5rem' }}>Share your journey</h3>
+                            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Inspire the next wave of donors.</p>
+                            <button 
+                                onClick={() => alert('Your story has been submitted to the regional council for verification.')}
+                                className="premium-btn btn-accent" 
+                                style={{ padding: '0.75rem 2rem' }}
+                            >
+                                POST TO GRID
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -94,3 +101,4 @@ function Community() {
 }
 
 export default Community;
+

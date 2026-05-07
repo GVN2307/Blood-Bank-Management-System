@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
@@ -12,10 +12,8 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Updated to use /api/auth/login
-            const res = await axios.post('http://localhost:3000/api/auth/login', { email, password, type });
+            const res = await api.post('/auth/login', { email, password, type });
             if (res.data.success) {
-                // Store Token
                 localStorage.setItem('token', res.data.token);
                 localStorage.setItem('user', JSON.stringify(res.data.user));
 
@@ -29,85 +27,96 @@ function Login() {
         }
     };
 
+
     return (
-        <div className="login-split">
-            {/* Left: Visual */}
-            <div className="login-visual">
-                <img src="/assets/login.jpeg" alt="Medical Tech" />
-                <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '3rem', margin: 0 }}>LifeLink</h2>
-                    <p style={{ letterSpacing: '4px', textTransform: 'uppercase', opacity: 0.8 }}>Secure Access Node</p>
-                </div>
-            </div>
+        <div className="page-wrapper" style={{ padding: 0, maxWidth: 'none', overflow: 'hidden' }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            {/* Right: Form */}
-            <div className="login-form-container">
-                <div style={{ width: '100%', maxWidth: '420px' }}>
-                    <div style={{ marginBottom: '40px' }}>
-                        <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Welcome Back</h1>
-                        <p style={{ color: 'var(--text-muted)' }}>Enter your credentials to access the network.</p>
+            <div className="grid-cols-2" style={{ height: '100vh', gap: 0 }}>
+                {/* Left: Visual Side */}
+                <div style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img 
+                        src="/login_visual_premium_1778141277668.png" 
+                        alt="Security Visual" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255, 59, 59, 0.4), rgba(5, 7, 10, 0.9))' }}></div>
+                    <div className="animate-in" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
+                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem' }} className="title-gradient">Secure Node</h1>
+                        <p style={{ letterSpacing: '0.3em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>ACCESS GRANTED ONLY</p>
                     </div>
+                </div>
 
-                    {/* Premium Tab Switcher */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '40px' }}>
-                        {['hospital', 'bloodbank', 'user', 'admin'].map((role) => (
-                            <button
-                                key={role}
-                                onClick={() => setType(role)}
-                                style={{
-                                    padding: '12px',
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    background: type === role ? (role === 'hospital' || role === 'user' ? 'var(--primary)' : 'var(--secondary)') : 'rgba(255,255,255,0.05)',
-                                    color: type === role ? (role === 'bloodbank' || role === 'admin' ? 'black' : 'white') : 'var(--text-muted)',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    textTransform: 'capitalize'
-                                }}
-                            >
-                                {role === 'bloodbank' ? 'Blood Bank' : role}
+                {/* Right: Form Side */}
+                <div className="flex-center" style={{ padding: '2rem' }}>
+                    <div className="glass-card animate-in" style={{ width: '100%', maxWidth: '480px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <div style={{ marginBottom: '3rem' }}>
+                            <h2 style={{ fontSize: '2.5rem' }} className="title-gradient">Welcome Back</h2>
+                            <p style={{ color: 'var(--text-dim)' }}>Identify yourself to the network.</p>
+                        </div>
+
+                        {/* Role Selector */}
+                        <div className="grid-cols-2" style={{ gap: '10px', marginBottom: '2.5rem' }}>
+                            {['hospital', 'bloodbank', 'user', 'admin'].map((role) => (
+                                <button
+                                    key={role}
+                                    onClick={() => setType(role)}
+                                    style={{
+                                        padding: '0.75rem',
+                                        borderRadius: '10px',
+                                        border: '1px solid',
+                                        borderColor: type === role ? 'var(--accent-primary)' : 'var(--border-glass)',
+                                        background: type === role ? 'rgba(255, 59, 59, 0.1)' : 'transparent',
+                                        color: type === role ? 'white' : 'var(--text-dim)',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        textTransform: 'uppercase'
+                                    }}
+                                >
+                                    {role === 'bloodbank' ? 'Blood Bank' : role}
+                                </button>
+                            ))}
+                        </div>
+
+                        <form onSubmit={handleLogin}>
+                            <div className="input-container">
+                                <label>EMAIL ADDRESS</label>
+                                <input
+                                    className="premium-input"
+                                    type="email"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="input-container">
+                                <label>ENCRYPTED PASSWORD</label>
+                                <input
+                                    className="premium-input"
+                                    type="password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            {error && <p style={{ color: 'var(--accent-primary)', fontSize: '0.85rem', marginBottom: '1rem' }}>{error}</p>}
+
+                            <button type="submit" className="premium-btn btn-accent" style={{ width: '100%', justifyContent: 'center', padding: '1.2rem' }}>
+                                Authenticate
                             </button>
-                        ))}
+
+                            <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                                <Link to="/register" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>
+                                    New to LifeLink? <span style={{ color: 'var(--accent-primary)' }}>Request Access</span>
+                                </Link>
+                            </div>
+                        </form>
                     </div>
-
-                    <form onSubmit={handleLogin}>
-                        <div className="input-group">
-                            <input
-                                className="styled-input"
-                                type="email"
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                placeholder=" "
-                            />
-                            <label className="input-label">Email Address</label>
-                        </div>
-
-                        <div className="input-group">
-                            <input
-                                className="styled-input"
-                                type="password"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                placeholder=" "
-                            />
-                            <label className="input-label">Password</label>
-                        </div>
-
-                        {error && <p style={{ color: '#ff6b6b', marginTop: '-10px', fontSize: '0.9rem' }}>{error}</p>}
-
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }}>
-                            Authenticate &rarr;
-                        </button>
-
-                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                            <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Don't have an account? Sign Up</Link>
-                        </div>
-                    </form>
-                </div>
-
-                <div style={{ position: 'absolute', bottom: '30px', color: '#555', fontSize: '0.8rem' }}>
-                    Protected by Telangana Government Health Data Privacy Act
                 </div>
             </div>
         </div>
@@ -115,3 +124,4 @@ function Login() {
 }
 
 export default Login;
+

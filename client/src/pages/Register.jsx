@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
@@ -21,9 +21,8 @@ function Register() {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:3000/api/auth/register', formData);
+            const res = await api.post('/auth/register', formData);
             if (res.data.success) {
-                alert('Registration Successful! Please Login.');
                 navigate('/login');
             }
         } catch (err) {
@@ -32,69 +31,89 @@ function Register() {
     };
 
     return (
-        <div className="login-split">
-            {/* Left: Visual (Reused from Login) */}
-            <div className="login-visual">
-                <img src="/assets/login.jpeg" alt="Medical Tech" />
-                <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '3rem', margin: 0 }}>Join LifeLink</h2>
-                    <p style={{ letterSpacing: '4px', textTransform: 'uppercase', opacity: 0.8 }}>Create Your Account</p>
-                </div>
-            </div>
+        <div className="page-wrapper" style={{ padding: 0, maxWidth: 'none', overflow: 'hidden' }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            {/* Right: Form */}
-            <div className="login-form-container">
-                <div style={{ width: '100%', maxWidth: '420px', overflowY: 'auto', maxHeight: '90vh' }}>
-                    <div style={{ marginBottom: '20px' }}>
-                        <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>Sign Up</h1>
-                        <p style={{ color: 'var(--text-muted)' }}>Enter your details to join the network.</p>
+            <div className="grid-cols-2" style={{ height: '100vh', gap: 0 }}>
+                {/* Left: Visual Side */}
+                <div style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img 
+                        src="/login_visual_premium_1778141277668.png" 
+                        alt="Security Visual" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255, 59, 59, 0.4), rgba(5, 7, 10, 0.9))' }}></div>
+                    <div className="animate-in" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
+                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem' }} className="title-gradient">Join Grid</h1>
+                        <p style={{ letterSpacing: '0.3em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>NETWORK REGISTRATION</p>
                     </div>
+                </div>
 
-                    <form onSubmit={handleRegister}>
-                        <div className="input-group">
-                            <label className="input-label" style={{ position: 'static', marginBottom: '5px', display: 'block' }}>Account Type</label>
-                            <select name="type" className="styled-input" value={formData.type} onChange={handleChange}>
-                                <option value="hospital">Hospital</option>
-                                <option value="bloodbank">Blood Bank</option>
-                                <option value="user">Individual User</option>
-                            </select>
+                {/* Right: Form Side */}
+                <div className="flex-center" style={{ padding: '2rem' }}>
+                    <div className="glass-card animate-in" style={{ width: '100%', maxWidth: '520px', border: '1px solid rgba(255, 255, 255, 0.05)', maxHeight: '90vh', overflowY: 'auto' }}>
+                        <div style={{ marginBottom: '2.5rem' }}>
+                            <h2 style={{ fontSize: '2.5rem' }} className="title-gradient">New Account</h2>
+                            <p style={{ color: 'var(--text-dim)' }}>Register your node in the Telangana health ecosystem.</p>
                         </div>
 
-                        <div className="input-group">
-                            <input className="styled-input" type="text" name="name" value={formData.name} onChange={handleChange} placeholder=" " required />
-                            <label className="input-label">Full Name / Organization</label>
-                        </div>
+                        <form onSubmit={handleRegister}>
+                            <div className="input-container">
+                                <label>ACCOUNT CLASSIFICATION</label>
+                                <select 
+                                    name="type" 
+                                    className="premium-input" 
+                                    value={formData.type} 
+                                    onChange={handleChange}
+                                    style={{ appearance: 'none' }}
+                                >
+                                    <option value="hospital">Hospital</option>
+                                    <option value="bloodbank">Blood Bank</option>
+                                    <option value="user">Individual User</option>
+                                </select>
+                            </div>
 
-                        <div className="input-group">
-                            <input className="styled-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder=" " required />
-                            <label className="input-label">Email Address</label>
-                        </div>
+                            <div className="grid-cols-2" style={{ gap: '1rem' }}>
+                                <div className="input-container">
+                                    <label>FULL NAME</label>
+                                    <input className="premium-input" type="text" name="name" value={formData.name} onChange={handleChange} required />
+                                </div>
+                                <div className="input-container">
+                                    <label>EMAIL ADDRESS</label>
+                                    <input className="premium-input" type="email" name="email" value={formData.email} onChange={handleChange} required />
+                                </div>
+                            </div>
 
-                        <div className="input-group">
-                            <input className="styled-input" type="password" name="password" value={formData.password} onChange={handleChange} placeholder=" " required />
-                            <label className="input-label">Password</label>
-                        </div>
+                            <div className="grid-cols-2" style={{ gap: '1rem' }}>
+                                <div className="input-container">
+                                    <label>PASSWORD</label>
+                                    <input className="premium-input" type="password" name="password" value={formData.password} onChange={handleChange} required />
+                                </div>
+                                <div className="input-container">
+                                    <label>PHONE</label>
+                                    <input className="premium-input" type="text" name="phone" value={formData.phone} onChange={handleChange} required />
+                                </div>
+                            </div>
 
-                        <div className="input-group">
-                            <input className="styled-input" type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder=" " required />
-                            <label className="input-label">Phone Number</label>
-                        </div>
+                            <div className="input-container">
+                                <label>PHYSICAL ADDRESS</label>
+                                <input className="premium-input" type="text" name="address" value={formData.address} onChange={handleChange} required />
+                            </div>
 
-                        <div className="input-group">
-                            <input className="styled-input" type="text" name="address" value={formData.address} onChange={handleChange} placeholder=" " />
-                            <label className="input-label">Address</label>
-                        </div>
+                            {error && <p style={{ color: 'var(--accent-primary)', fontSize: '0.85rem', marginBottom: '1rem' }}>{error}</p>}
 
-                        {error && <p style={{ color: '#ff6b6b', marginTop: '10px' }}>{error}</p>}
+                            <button type="submit" className="premium-btn btn-accent" style={{ width: '100%', justifyContent: 'center', padding: '1.2rem', marginTop: '1rem' }}>
+                                Complete Registration
+                            </button>
 
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '20px' }}>
-                            Register &rarr;
-                        </button>
-
-                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                            <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Already have an account? Login</Link>
-                        </div>
-                    </form>
+                            <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                                <Link to="/login" style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.9rem' }}>
+                                    Existing member? <span style={{ color: 'var(--accent-primary)' }}>Secure Login</span>
+                                </Link>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,3 +121,4 @@ function Register() {
 }
 
 export default Register;
+

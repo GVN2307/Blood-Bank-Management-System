@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 const TESTS = [
     'Complete Blood Count (CBC)',
@@ -14,7 +14,7 @@ const TESTS = [
 const NEARBY_HOSPITALS = [
     { id: 1, name: 'NIMS Hyderabad', distance: '2.5 km', price: '₹500' },
     { id: 2, name: 'Apollo Hospitals Jubilee Hills', distance: '4.8 km', price: '₹1200' },
-    { id: 5, name: 'Yashoda Hospitals', distance: '6.1 km', price: '₹900' } // Mock ID
+    { id: 5, name: 'Yashoda Hospitals', distance: '6.1 km', price: '₹900' }
 ];
 
 function TestSchedule() {
@@ -26,13 +26,10 @@ function TestSchedule() {
 
     const handleBook = async () => {
         setLoading(true);
-        const token = localStorage.getItem('token');
         try {
-            await axios.post('http://localhost:3000/api/user/tests', {
+            await api.post('/user/tests', {
                 hospitalId: selectedHospital.id,
                 testType: selectedTest
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
             setLoading(false);
             setStep(3);
@@ -43,114 +40,121 @@ function TestSchedule() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingBottom: '50px' }}>
-            <nav className="navbar container">
-                <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => navigate('/user-dashboard')}>
-                    <span className="logo-text">&larr; Dashboard</span>
-                </div>
-            </nav>
+        <div className="page-wrapper" style={{ padding: 0 }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            <div className="container" style={{ maxWidth: '800px', marginTop: '40px' }}>
-                <div className="glass-panel" style={{ padding: '40px' }}>
-                    <h1 style={{ marginBottom: '30px' }}>Schedule a Lab Test</h1>
+            <div className="container animate-in" style={{ maxWidth: '900px', padding: '4rem 2rem' }}>
+                <button onClick={() => navigate('/user-dashboard')} className="premium-btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; BACK TO HUB</button>
 
-                    {/* Step 1: Select Test */}
-                    {step === 1 && (
+                <div className="glass-card" style={{ padding: '3rem' }}>
+                    <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <h3 style={{ color: 'var(--text-muted)' }}>Step 1: Choose Test Type</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px' }}>
-                                {TESTS.map(test => (
-                                    <button
-                                        key={test}
-                                        onClick={() => setSelectedTest(test)}
-                                        style={{
-                                            padding: '20px',
-                                            borderRadius: '12px',
-                                            background: selectedTest === test ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                                            color: 'white',
-                                            border: 'none',
-                                            textAlign: 'left',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s',
-                                            border: selectedTest === test ? 'none' : '1px solid rgba(255,255,255,0.1)'
-                                        }}
-                                    >
-                                        {test}
-                                    </button>
-                                ))}
-                            </div>
-                            <div style={{ textAlign: 'right', marginTop: '30px' }}>
+                            <h1 className="title-gradient" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Schedule Diagnostics</h1>
+                            <p style={{ color: 'var(--text-dim)' }}>Step {step} of 2: {step === 1 ? 'Choose screening type' : 'Select designated facility'}</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div style={{ width: '30px', height: '4px', borderRadius: '2px', background: step >= 1 ? 'var(--accent-primary)' : 'var(--border-glass)' }}></div>
+                            <div style={{ width: '30px', height: '4px', borderRadius: '2px', background: step >= 2 ? 'var(--accent-primary)' : 'var(--border-glass)' }}></div>
+                        </div>
+                    </div>
+
+                    {step === 1 && (
+                        <div className="grid-cols-2" style={{ gap: '1rem' }}>
+                            {TESTS.map(test => (
+                                <div
+                                    key={test}
+                                    onClick={() => setSelectedTest(test)}
+                                    className="glass-card"
+                                    style={{
+                                        padding: '1.5rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        background: selectedTest === test ? 'rgba(255, 59, 59, 0.1)' : 'rgba(255,255,255,0.02)',
+                                        borderColor: selectedTest === test ? 'var(--accent-primary)' : 'var(--border-glass)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '1rem'
+                                    }}
+                                >
+                                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', border: '2px solid var(--accent-primary)', background: selectedTest === test ? 'var(--accent-primary)' : 'transparent' }}></div>
+                                    <span style={{ fontWeight: 'bold', color: selectedTest === test ? 'white' : 'var(--text-dim)' }}>{test}</span>
+                                </div>
+                            ))}
+                            <div style={{ gridColumn: 'span 2', marginTop: '2rem', textAlign: 'right' }}>
                                 <button
-                                    className="btn btn-primary"
+                                    className="premium-btn btn-accent"
                                     disabled={!selectedTest}
                                     onClick={() => setStep(2)}
-                                    style={{ opacity: !selectedTest ? 0.5 : 1 }}
+                                    style={{ padding: '1rem 3rem' }}
                                 >
-                                    Next: Select Hospital &rarr;
+                                    CONTINUE &rarr;
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 2: Select Hospital */}
                     {step === 2 && (
                         <div>
-                            <h3 style={{ color: 'var(--text-muted)' }}>Step 2: Choose Facility</h3>
-                            <p>Test: <b>{selectedTest}</b> <span style={{ color: 'var(--primary)', cursor: 'pointer', fontSize: '0.9rem' }} onClick={() => setStep(1)}>(Change)</span></p>
+                            <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+                                <span style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>SELECTED TEST:</span>
+                                <span style={{ fontWeight: 'bold' }}>{selectedTest}</span>
+                                <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}>[EDIT]</button>
+                            </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 {NEARBY_HOSPITALS.map(hospital => (
                                     <div
                                         key={hospital.id}
                                         onClick={() => setSelectedHospital(hospital)}
+                                        className="glass-card"
                                         style={{
-                                            padding: '20px',
-                                            borderRadius: '12px',
-                                            background: selectedHospital?.id === hospital.id ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
-                                            border: selectedHospital?.id === hospital.id ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,0.05)',
+                                            padding: '1.5rem 2rem',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             justifyContent: 'space-between',
-                                            alignItems: 'center'
+                                            alignItems: 'center',
+                                            background: selectedHospital?.id === hospital.id ? 'rgba(255, 59, 59, 0.05)' : 'transparent',
+                                            borderColor: selectedHospital?.id === hospital.id ? 'var(--accent-primary)' : 'var(--border-glass)'
                                         }}
                                     >
                                         <div>
-                                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{hospital.name}</div>
-                                            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>📍 {hospital.distance} away</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'white' }}>{hospital.name}</div>
+                                            <div style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginTop: '0.25rem' }}>📍 {hospital.distance} from your location</div>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
-                                            <span style={{ fontWeight: 'bold', color: 'var(--secondary)', display: 'block' }}>{hospital.price}</span>
+                                            <div style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem' }}>{hospital.price}</div>
+                                            <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>BASE FEE</div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div style={{ textAlign: 'right', marginTop: '30px' }}>
+                            <div style={{ marginTop: '3rem', textAlign: 'right' }}>
                                 <button
-                                    className="btn btn-primary"
+                                    className="premium-btn btn-accent"
                                     disabled={!selectedHospital || loading}
                                     onClick={handleBook}
-                                    style={{ opacity: !selectedHospital ? 0.5 : 1 }}
+                                    style={{ padding: '1rem 4rem' }}
                                 >
-                                    {loading ? 'Processing...' : 'Confirm Booking'}
+                                    {loading ? 'SECURING SLOT...' : 'CONFIRM APPOINTMENT'}
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 3: Success */}
                     {step === 3 && (
-                        <div style={{ textAlign: 'center', padding: '40px' }}>
-                            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>✅</div>
-                            <h2>Appointment Confirmed!</h2>
-                            <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>
-                                Your request for <b>{selectedTest}</b> at <b>{selectedHospital?.name}</b> has been sent.
-                                You will receive a confirmation shortly.
+                        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', border: '2px solid #10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+                                <span style={{ color: '#10B981', fontSize: '2.5rem' }}>✓</span>
+                            </div>
+                            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Slot Secured</h2>
+                            <p style={{ color: 'var(--text-dim)', maxWidth: '400px', margin: '0 auto 3rem' }}>
+                                Your screening for <b>{selectedTest}</b> at <b>{selectedHospital?.name}</b> has been broadcast to the facility.
                             </p>
-                            <button onClick={() => navigate('/user-dashboard')} className="btn btn-primary">Back to Dashboard</button>
+                            <button onClick={() => navigate('/user-dashboard')} className="premium-btn btn-accent" style={{ padding: '1rem 3rem' }}>RETURN TO HUB</button>
                         </div>
                     )}
-
                 </div>
             </div>
         </div>
@@ -158,3 +162,4 @@ function TestSchedule() {
 }
 
 export default TestSchedule;
+

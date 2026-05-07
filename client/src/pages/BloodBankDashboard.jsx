@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import io from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
-import { Line, Bar } from 'react-chartjs-2'; // Assumes chart.js installed or we mock visual
-import 'chart.js/auto'; // Mocking or basic implementation
-
-const socket = io('http://localhost:3000');
 
 function BloodBankDashboard() {
     const [inventory, setInventory] = useState([]);
@@ -15,266 +11,246 @@ function BloodBankDashboard() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        if (!user || user.type !== 'bloodbank') navigate('/login');
+        if (!user || user.type !== 'bloodbank') {
+            navigate('/login');
+            return;
+        }
         fetchInventory();
-        socket.emit('join_room', 'bloodbank');
 
-        socket.on('emergency_alert', (data) => {
-            setAlerts(prev => [data, ...prev]);
-            alert('NEW EMERGENCY REQUEST RECEIVED!');
-        });
-
-        return () => socket.off('emergency_alert');
-    }, []);
+        if (window.location.hostname === 'localhost') {
+            const socket = io('http://localhost:3000');
+            socket.emit('join_room', 'bloodbank');
+            socket.on('emergency_alert', (data) => {
+                setAlerts(prev => [data, ...prev]);
+            });
+            return () => socket.disconnect();
+        }
+    }, [navigate]);
 
     const fetchInventory = async () => {
-        const token = localStorage.getItem('token');
         try {
-            const res = await axios.get(`http://localhost:3000/api/inventory/${user.id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/inventory/${user.id}`);
             setInventory(res.data);
         } catch (err) {
-            console.error(err);
+            console.error('Fetch Inventory Error:', err);
         }
     };
 
-    const updateStock = async (bloodGroup, units) => {
-        const newUnits = prompt(`Update stock for ${bloodGroup}:`, units);
-        if (newUnits !== null) {
-            const token = localStorage.getItem('token');
+    const updateStock = async (bloodGroup, currentUnits) => {
+        const newUnits = prompt(`Update stock for ${bloodGroup}:`, currentUnits);
+        if (newUnits !== null && !isNaN(newUnits)) {
             try {
-                await axios.post('http://localhost:3000/api/inventory', {
+                await api.post('/inventory', {
                     bloodGroup,
                     units: parseInt(newUnits)
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
                 });
                 fetchInventory();
             } catch (err) {
-                alert(err.response?.data?.error || 'Failed to update stock');
+                alert(err.response?.data?.error || 'Update failed');
             }
         }
     };
 
-    // Mock Data for Reports
-    const reportData = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-            {
-                label: 'Units Collected',
-                data: [65, 59, 80, 81, 56, 55],
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-            {
-                label: 'Units Distributed',
-                data: [45, 49, 60, 71, 46, 35],
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            },
-        ],
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/');
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', paddingBottom: '50px' }}>
-            <div className="dashboard-header" style={{ height: '250px' }}>
-                <img src="/assets/donate.jpeg" alt="Header" />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(50,0,0,0.3), #020204)' }}></div>
-                <div className="container" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'flex-end', paddingBottom: '60px' }}>
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <div>
-                            <h2 style={{ margin: 0, opacity: 0.7 }}>Blood Bank Console</h2>
-                            <h1 style={{ fontSize: '3rem', margin: 0 }}>{user?.name}</h1>
-                        </div>
-                        <button onClick={() => navigate('/')} className="btn" style={{ background: 'rgba(255,255,255,0.1)' }}>Logout</button>
-                    </div>
-                </div>
-            </div>
+        <div className="page-wrapper" style={{ padding: 0, display: 'flex' }}>
+            <div className="app-bg"></div>
+            <div className="mesh-grid"></div>
 
-            <div className="container dashboard-content-wrapper">
-                {/* Navigation Tabs */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', overflowX: 'auto', paddingBottom: '10px' }}>
-                    {['inventory', 'requests', 'history', 'reports', 'events'].map(tab => (
+            {/* Sidebar */}
+            <div style={{ width: '300px', background: 'rgba(5, 7, 10, 0.8)', backdropFilter: 'blur(20px)', borderRight: '1px solid var(--border-glass)', z_index: 100, height: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ marginBottom: '3rem' }}>
+                    <h1 style={{ fontSize: '1.5rem', margin: 0 }} className="title-gradient">LifeLink</h1>
+                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>SUPPLY NODE</p>
+                </div>
+
+                <div style={{ flex: 1 }}>
+                    {['inventory', 'requests', 'history', 'reports'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
+                            className="premium-btn"
                             style={{
-                                padding: '12px 24px',
-                                borderRadius: '30px',
-                                border: '1px solid var(--glass-border)',
-                                background: activeTab === tab ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                textTransform: 'capitalize',
-                                whiteSpace: 'nowrap'
+                                width: '100%',
+                                justifyContent: 'flex-start',
+                                marginBottom: '0.5rem',
+                                background: activeTab === tab ? 'rgba(255, 59, 59, 0.1)' : 'transparent',
+                                borderColor: activeTab === tab ? 'var(--accent-primary)' : 'transparent',
+                                color: activeTab === tab ? 'white' : 'var(--text-dim)'
                             }}
                         >
-                            {tab}
+                            {tab.toUpperCase()}
                         </button>
                     ))}
                 </div>
 
-                {/* Tab: Inventory */}
-                {activeTab === 'inventory' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-                            <h3>Live Stock Levels</h3>
-                            <button className="btn" style={{ fontSize: '0.8rem', padding: '8px 16px' }} onClick={fetchInventory}>Sync Database</button>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '20px' }}>
-                            {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => {
-                                const item = inventory.find(i => i.blood_group === bg);
-                                const count = item ? item.units : 0;
-                                return (
-                                    <div
-                                        key={bg}
-                                        onClick={() => updateStock(bg, count)}
-                                        style={{
-                                            position: 'relative',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.05)',
-                                            borderRadius: '16px',
-                                            padding: '20px',
-                                            textAlign: 'center',
-                                            cursor: 'pointer',
-                                            overflow: 'hidden',
-                                            transition: 'all 0.3s'
-                                        }}
-                                    >
-                                        <h2 style={{ fontSize: '2.5rem', margin: '0 0 5px 0' }}>{count}</h2>
-                                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#888' }}>{bg}</span>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
-
-                {/* Tab: Requests (Live Tracking) */}
-                {activeTab === 'requests' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
-                        <div className="glass-panel" style={{ padding: '30px' }}>
-                            <h3>Incoming Requests & Tracking</h3>
-                            {alerts.length === 0 ? (
-                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No active emergency requests.</p>
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    {alerts.map((alert, idx) => (
-                                        <div key={idx} style={{ background: 'rgba(255,0,0,0.1)', padding: '20px', borderRadius: '12px', borderLeft: '4px solid red' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <h4 style={{ margin: 0 }}>🚨 Emergency from {alert.hospitalName}</h4>
-                                                <span style={{ color: '#ff6b6b' }}>Live</span>
-                                            </div>
-                                            <p>Requires <b>{alert.units} units</b> of <b>{alert.bloodGroup}</b></p>
-                                            <div style={{ marginTop: '10px', height: '10px', background: '#333', borderRadius: '5px' }}>
-                                                <div style={{ width: '60%', height: '100%', background: 'var(--primary)', borderRadius: '5px' }}></div>
-                                            </div>
-                                            <small style={{ color: 'var(--text-muted)' }}>Drone dispatched... 60% en route</small>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        <div className="glass-panel" style={{ padding: '30px' }}>
-                            <h3>Fulfilled Requests</h3>
-                            <ul style={{ listStyle: 'none', padding: 0 }}>
-                                <li style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div style={{ fontWeight: 'bold' }}>NIMS Hyderabad</div>
-                                    <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>2 units O+ (Yesterday)</div>
-                                </li>
-                                <li style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div style={{ fontWeight: 'bold' }}>Apollo Jubilee</div>
-                                    <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>5 units AB- (Last Week)</div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                )}
-
-                {/* Tab: Reports */}
-                {activeTab === 'reports' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <h3>Annual Reports</h3>
-                        <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                            <p style={{ color: 'var(--text-muted)' }}>[Chart Visual: Collected vs Distributed]</p>
-                            {/* In real implementation, render <Bar data={reportData} /> here */}
-                        </div>
-                        <div style={{ marginTop: '30px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-                            <div style={{ textAlign: 'center' }}>
-                                <h1>1,240</h1>
-                                <p style={{ color: 'var(--text-muted)' }}>Total Donors (Year)</p>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <h1 style={{ color: 'var(--secondary)' }}>850</h1>
-                                <p style={{ color: 'var(--text-muted)' }}>Units Issued</p>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <h1 style={{ color: '#ffd700' }}>12</h1>
-                                <p style={{ color: 'var(--text-muted)' }}>Camps Conducted</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Tab: Events */}
-                {activeTab === 'events' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                            <h3>Upcoming Events</h3>
-                            <button className="btn btn-primary">Create Event</button>
-                        </div>
-                        <div style={{ display: 'grid', gap: '20px' }}>
-                            <div style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                                <h4>Mega Blood Donation Camp</h4>
-                                <p style={{ color: 'var(--text-muted)', margin: '5px 0' }}>📅 Dec 15, 2025 • 📍 Hitech City</p>
-                                <p>Expected Donors: 500+</p>
-                            </div>
-                            <div style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                                <h4>Awareness Run</h4>
-                                <p style={{ color: 'var(--text-muted)', margin: '5px 0' }}>📅 Jan 20, 2026 • 📍 KBR Park</p>
-                                <p>Sponsors: 5</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Tab: History */}
-                {activeTab === 'history' && (
-                    <div className="glass-panel" style={{ padding: '30px' }}>
-                        <h3>Past Supplements</h3>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-                                    <th style={{ padding: '15px' }}>Date</th>
-                                    <th style={{ padding: '15px' }}>Requested By</th>
-                                    <th style={{ padding: '15px' }}>Type</th>
-                                    <th style={{ padding: '15px' }}>Qty</th>
-                                    <th style={{ padding: '15px' }}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '15px' }}>2025-10-12</td>
-                                    <td style={{ padding: '15px' }}>NIMS</td>
-                                    <td style={{ padding: '15px' }}>A+</td>
-                                    <td style={{ padding: '15px' }}>2</td>
-                                    <td style={{ padding: '15px', color: '#00ff00' }}>Delivered</td>
-                                </tr>
-                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <td style={{ padding: '15px' }}>2025-10-10</td>
-                                    <td style={{ padding: '15px' }}>Apollo</td>
-                                    <td style={{ padding: '15px' }}>O-</td>
-                                    <td style={{ padding: '15px' }}>1</td>
-                                    <td style={{ padding: '15px', color: '#00ff00' }}>Delivered</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-
+                <div className="glass-card" style={{ padding: '1rem', marginTop: '2rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: 'bold' }}>{user?.name}</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>TELANGANA_GRID_ID: {user?.id?.toString().slice(0, 8)}</p>
+                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>DISCONNECT</button>
+                </div>
             </div>
+
+            {/* Main Content */}
+            <div style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '3rem', position: 'relative' }}>
+                <div style={{ marginBottom: '3rem' }}>
+                    <h2 className="title-gradient" style={{ fontSize: '2.5rem' }}>Inventory Matrix</h2>
+                    <p style={{ color: 'var(--text-dim)' }}>Monitor and manage critical blood supplies for the region.</p>
+                </div>
+
+                {activeTab === 'inventory' && (
+                    <div className="grid-cols-4" style={{ gap: '1.5rem' }}>
+                        {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => {
+                            const item = inventory.find(i => i.blood_group === bg);
+                            const count = item ? item.units : 0;
+                            return (
+                                <div
+                                    key={bg}
+                                    onClick={() => updateStock(bg, count)}
+                                    className="glass-card flex-center"
+                                    style={{
+                                        flexDirection: 'column',
+                                        padding: '2rem',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        border: count < 5 ? '1px solid rgba(255, 59, 59, 0.3)' : '1px solid var(--border-glass)'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    <h3 style={{ fontSize: '3rem', margin: 0 }} className={count < 5 ? 'title-gradient' : ''}>{count}</h3>
+                                    <p style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>{bg}</p>
+                                    {count < 5 && <p style={{ fontSize: '0.6rem', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>CRITICAL STOCK</p>}
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
+
+                {activeTab === 'requests' && (
+                    <div style={{ maxWidth: '800px' }}>
+                        <h3 className="title-gradient" style={{ marginBottom: '2rem' }}>Live Emergency Feed</h3>
+                        {alerts.length === 0 ? (
+                            <div className="glass-card flex-center" style={{ padding: '4rem', flexDirection: 'column' }}>
+                                <p style={{ color: 'var(--text-dim)' }}>Scanning for emergency broadcasts...</p>
+                                <div style={{ width: '40px', height: '40px', border: '2px solid var(--accent-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', marginTop: '1rem' }}></div>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {alerts.map((alert, idx) => (
+                                    <div key={idx} className="glass-card" style={{ borderLeft: '4px solid var(--accent-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <h4 style={{ margin: 0, color: 'white' }}>🚨 {alert.hospitalName}</h4>
+                                            <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginTop: '0.25rem' }}>Requires {alert.units} units of {alert.bloodGroup}</p>
+                                        </div>
+                                        <button className="premium-btn btn-accent" style={{ fontSize: '0.7rem' }}>DEPLOY SUPPLY</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'history' && (
+                    <div className="animate-in">
+                        <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <table className="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>DISPATCH ID</th>
+                                        <th>DESTINATION</th>
+                                        <th>TYPE</th>
+                                        <th>UNITS</th>
+                                        <th>DATE</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { id: 'D-8821', hospital: 'Apollo Jubilee Hills', type: 'O+', units: 4, date: '2024-05-02', status: 'DELIVERED' },
+                                        { id: 'D-8822', hospital: 'Care Hospitals', type: 'A-', units: 2, date: '2024-05-04', status: 'IN_TRANSIT' },
+                                        { id: 'D-8823', hospital: 'Yashoda Secunderabad', type: 'B+', units: 1, date: '2024-05-06', status: 'SCHEDULED' }
+                                    ].map(d => (
+                                        <tr key={d.id}>
+                                            <td style={{ opacity: 0.5 }}>{d.id}</td>
+                                            <td>{d.hospital}</td>
+                                            <td style={{ fontWeight: 'bold' }}>{d.type}</td>
+                                            <td>{d.units} Units</td>
+                                            <td style={{ color: 'var(--text-dim)' }}>{d.date}</td>
+                                            <td>
+                                                <span style={{ 
+                                                    padding: '2px 8px', 
+                                                    borderRadius: '4px', 
+                                                    fontSize: '0.6rem',
+                                                    background: d.status === 'DELIVERED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 189, 248, 0.1)',
+                                                    color: d.status === 'DELIVERED' ? '#10b981' : '#38bdf8'
+                                                }}>
+                                                    {d.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'reports' && (
+                    <div className="grid-cols-2 animate-in" style={{ gap: '2rem' }}>
+                        <div className="glass-card" style={{ padding: '2rem' }}>
+                            <h3>Supply vs Demand Delta</h3>
+                            <div style={{ height: '240px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', padding: '1.5rem', marginTop: '1.5rem', position: 'relative' }}>
+                                <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
+                                    <path d="M0,150 Q100,100 200,120 T400,50" fill="none" stroke="var(--accent-primary)" strokeWidth="3" />
+                                    <path d="M0,130 Q100,160 200,110 T400,140" fill="none" stroke="var(--accent-secondary)" strokeWidth="3" />
+                                    <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.1)" strokeDasharray="5,5" />
+                                </svg>
+                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', fontSize: '0.6rem' }}>
+                                    <span><span style={{ color: 'var(--accent-primary)' }}>●</span> SUPPLY TREND</span>
+                                    <span><span style={{ color: 'var(--accent-secondary)' }}>●</span> DEMAND TREND</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="glass-card" style={{ padding: '2rem' }}>
+                            <h3>Operational Efficiency</h3>
+                            <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                {[
+                                    { label: 'Dispatch Precision', value: 94, color: 'var(--accent-primary)' },
+                                    { label: 'Inventory Fluidity', value: 82, color: 'var(--accent-secondary)' },
+                                    { label: 'Cold-Chain Integrity', value: 99, color: '#10b981' }
+                                ].map(stat => (
+                                    <div key={stat.label}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+                                            <span style={{ color: 'var(--text-dim)' }}>{stat.label}</span>
+                                            <span style={{ fontWeight: 'bold' }}>{stat.value}%</span>
+                                        </div>
+                                        <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                                            <div style={{ 
+                                                width: `${stat.value}%`, 
+                                                height: '100%', 
+                                                background: stat.color,
+                                                boxShadow: `0 0 15px ${stat.color}66`
+                                            }}></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            
+            <style>{`
+                @keyframes spin { to { transform: rotate(360deg); } }
+            `}</style>
         </div>
     );
 }
 
 export default BloodBankDashboard;
+
