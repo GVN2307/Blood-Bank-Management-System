@@ -44,7 +44,7 @@ function Community() {
                         className="hover-lift"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                        BACK TO HUB
+                        Back to hub
                     </button>
 
                     <div 
@@ -64,14 +64,14 @@ function Community() {
                         }}>
                             <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.02em', fontWeight: '500' }}>
                             Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
                         </h2>
                     </div>
                 </div>
 
                 <div style={{ marginBottom: '4rem' }}>
-                    <h1 className="title-gradient" style={{ fontSize: '4rem', marginBottom: '1rem' }}>Community Heroes</h1>
+                    <h1 className="title-gradient" style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: '500' }}>Community heroes</h1>
                     <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', maxWidth: '600px' }}>
                         Celebrating the champions of the Telangana Health Grid.
                     </p>
@@ -80,7 +80,7 @@ function Community() {
                 <div className="grid-cols-2" style={{ gap: '4rem', alignItems: 'start' }}>
                     {/* Leaderboard */}
                     <div>
-                        <h2 className="title-accent" style={{ marginBottom: '2rem' }}>TOP DONORS</h2>
+                        <h2 className="title-accent" style={{ marginBottom: '2rem' }}>Top donors</h2>
                         <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                             {LEADERS.map((leader, index) => (
                                 <div key={index} style={{
@@ -95,19 +95,19 @@ function Community() {
                                         <div style={{
                                             width: '40px', height: '40px', borderRadius: '10px',
                                             background: leader.color,
-                                            color: 'black', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: 'black', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             boxShadow: `0 0 20px ${leader.color}44`
                                         }}>
                                             {index + 1}
                                         </div>
                                         <div>
-                                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'white' }}>{leader.name}</div>
-                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{leader.badge}</div>
+                                            <div style={{ fontWeight: '500', fontSize: '1.1rem', color: 'white' }}>{leader.name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>{leader.badge}</div>
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{leader.units}</div>
-                                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>UNITS</div>
+                                        <div style={{ fontWeight: '500', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{leader.units}</div>
+                                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>Units</div>
                                     </div>
                                 </div>
                             ))}
@@ -116,26 +116,26 @@ function Community() {
 
                     {/* Stories */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        <h2 className="title-accent">IMPACT STORIES</h2>
+                        <h2 className="title-accent">Impact stories</h2>
                         {STORIES.map((story, index) => (
                             <div key={index} className="glass-card" style={{ padding: '2rem' }}>
                                 <p style={{ fontSize: '1.1rem', lineHeight: '1.7', color: 'white', marginBottom: '1.5rem' }}>"{story.story}"</p>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-glass)', paddingTop: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '0.9rem' }}>{story.name}</span>
+                                    <span style={{ fontWeight: '500', color: 'var(--accent-primary)', fontSize: '0.9rem' }}>{story.name}</span>
                                     <span style={{ color: 'var(--text-dim)', fontSize: '0.7rem' }}>{story.date}</span>
                                 </div>
                             </div>
                         ))}
 
                         <div className="glass-card" style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border-glass)' }}>
-                            <h3 style={{ marginBottom: '0.5rem' }}>Share your journey</h3>
+                            <h3 style={{ marginBottom: '0.5rem', fontWeight: '500' }}>Share your journey</h3>
                             <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Inspire the next wave of donors.</p>
                             <button 
                                 onClick={() => alert('Your story has been submitted to the regional council for verification.')}
                                 className="premium-btn btn-accent" 
                                 style={{ padding: '0.75rem 2rem' }}
                             >
-                                POST TO GRID
+                                Post to grid
                             </button>
                         </div>
                     </div>

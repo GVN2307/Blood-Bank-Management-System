@@ -102,11 +102,11 @@ function AdminDashboard() {
                         }}>
                             <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.02em', fontWeight: '500' }}>
                             Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
                         </h2>
                     </div>
-                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.2em', marginTop: '0.5rem' }}>ADMINISTRATIVE CONSOLE</p>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.1em', marginTop: '0.5rem' }}>Administrative console</p>
                 </div>
 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -141,7 +141,7 @@ function AdminDashboard() {
                         <p style={{ color: 'var(--text-dim)' }}>Real-time telemetry from across the state.</p>
                     </div>
                     <div className="stat-pill">
-                        System Status: <span style={{ color: '#10B981' }}>OPTIMAL</span>
+                        System status: <span style={{ color: '#10B981' }}>Optimal</span>
                     </div>
                 </header>
 
@@ -149,24 +149,24 @@ function AdminDashboard() {
                     <div className="animate-in">
                         <div className="grid-cols-3" style={{ marginBottom: '3rem' }}>
                             <div className="glass-card" style={{ padding: '2rem', borderLeft: '4px solid var(--accent-secondary)' }}>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>TOTAL ENTITIES</p>
-                                <h2 style={{ fontSize: '3rem' }}>{stats.users.hospital + stats.users.bloodbank + stats.users.user}</h2>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>Total entities</p>
+                                <h2 style={{ fontSize: '3rem', fontWeight: '500' }}>{stats.users.hospital + stats.users.bloodbank + stats.users.user}</h2>
                                 <div style={{ fontSize: '0.75rem', marginTop: '1rem', color: 'var(--text-dim)' }}>
                                     <span style={{ color: 'var(--accent-secondary)' }}>●</span> {stats.users.hospital} Hospitals | <span style={{ color: 'var(--accent-primary)' }}>●</span> {stats.users.bloodbank} Blood Banks
                                 </div>
                             </div>
 
                             <div className="glass-card" style={{ padding: '2rem', borderLeft: '4px solid var(--accent-primary)' }}>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>GLOBAL INVENTORY</p>
-                                <h2 style={{ fontSize: '3rem', color: 'var(--accent-primary)' }}>{stats.blood_units}</h2>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>Global inventory</p>
+                                <h2 style={{ fontSize: '3rem', color: 'var(--accent-primary)', fontWeight: '500' }}>{stats.blood_units}</h2>
                                 <div style={{ fontSize: '0.75rem', marginTop: '1rem', color: 'var(--text-dim)' }}>
                                     Total units available in regional storage
                                 </div>
                             </div>
 
                             <div className="glass-card" style={{ padding: '2rem', borderLeft: '4px solid var(--accent-tertiary)' }}>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>ACTIVE DISPATCHES</p>
-                                <h2 style={{ fontSize: '3rem', color: 'var(--accent-tertiary)' }}>{stats.requests.pending}</h2>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>Active dispatches</p>
+                                <h2 style={{ fontSize: '3rem', color: 'var(--accent-tertiary)', fontWeight: '500' }}>{stats.requests.pending}</h2>
                                 <div style={{ fontSize: '0.75rem', marginTop: '1rem', color: 'var(--text-dim)' }}>
                                     {stats.requests.fulfilled} successful deliveries today
                                 </div>
@@ -199,9 +199,9 @@ function AdminDashboard() {
                                     ))}
                                 </div>
                                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', fontSize: '0.65rem', color: 'var(--text-dim)' }}>
-                                    <span><span style={{ color: '#ff3b3b' }}>●</span> CRITICAL SUPPLY</span>
-                                    <span><span style={{ color: '#10b981' }}>●</span> OPTIMAL</span>
-                                    <span><span style={{ color: '#38bdf8' }}>●</span> STABLE</span>
+                                    <span><span style={{ color: '#ff3b3b' }}>●</span> Critical supply</span>
+                                    <span><span style={{ color: '#10b981' }}>●</span> Optimal</span>
+                                    <span><span style={{ color: '#38bdf8' }}>●</span> Stable</span>
                                 </div>
                             </div>
 
@@ -243,11 +243,11 @@ function AdminDashboard() {
                             <table className="premium-table">
                                 <thead>
                                     <tr>
-                                        <th>NODE ID</th>
-                                        <th>ENTITY NAME</th>
-                                        <th>CLASSIFICATION</th>
-                                        <th>ENCRYPTED EMAIL</th>
-                                        <th>ACTIONS</th>
+                                        <th>Node ID</th>
+                                        <th>Entity name</th>
+                                        <th>Classification</th>
+                                        <th>Encrypted email</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -275,7 +275,7 @@ function AdminDashboard() {
                                                     className="premium-btn btn-outline" 
                                                     style={{ padding: '0.4rem 1rem', fontSize: '0.7rem', color: 'var(--accent-primary)', borderColor: 'rgba(255, 59, 59, 0.2)' }}
                                                 >
-                                                    TERMINATE
+                                                    Terminate
                                                 </button>
                                             </td>
                                         </tr>

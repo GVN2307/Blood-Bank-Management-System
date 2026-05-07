@@ -83,11 +83,11 @@ function HospitalDashboard() {
                         }}>
                             <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.02em', fontWeight: '500' }}>
                             Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
                         </h2>
                     </div>
-                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold', marginTop: '0.5rem' }}>HOSPITAL NODE</p>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.1em', marginTop: '0.5rem' }}>Hospital node</p>
                 </div>
 
                 <div style={{ flex: 1 }}>
@@ -111,9 +111,9 @@ function HospitalDashboard() {
                 </div>
 
                 <div className="glass-card" style={{ padding: '1rem', marginTop: '2rem' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: 'bold' }}>{user?.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>ID: {user?.id?.toString().slice(0, 8)}</p>
-                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>DISCONNECT</button>
+                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: '500' }}>{user?.name}</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>Grid ID: {user?.id?.toString().slice(0, 8)}</p>
+                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>Disconnect</button>
                 </div>
             </div>
 
@@ -121,7 +121,7 @@ function HospitalDashboard() {
             <div style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '3rem', position: 'relative' }}>
                 <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                        <h2 className="title-gradient" style={{ fontSize: '2.5rem' }}>Tactical Overview</h2>
+                        <h2 className="title-gradient" style={{ fontSize: '2.5rem', fontWeight: '500' }}>Tactical overview</h2>
                         <p style={{ color: 'var(--text-dim)' }}>Real-time coordination and resource management.</p>
                     </div>
                 </div>
@@ -147,14 +147,14 @@ function HospitalDashboard() {
                         </div>
 
                         <div className="glass-card">
-                            <h3 className="title-gradient" style={{ marginBottom: '1.5rem' }}>Emergency Broadcast</h3>
+                            <h3 className="title-gradient" style={{ marginBottom: '1.5rem', fontWeight: '500' }}>Emergency broadcast</h3>
                             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '2rem' }}>
                                 Deploy an SOS to all connected blood banks within the Telangana Health Grid.
                             </p>
 
                             <form onSubmit={handleRequest}>
                                 <div className="input-container">
-                                    <label>BLOOD CLASSIFICATION</label>
+                                    <label>Blood classification</label>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                                         {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
                                             <button
@@ -168,7 +168,7 @@ function HospitalDashboard() {
                                                     borderColor: request.bloodGroup === bg ? 'var(--accent-primary)' : 'var(--border-glass)',
                                                     borderRadius: '8px',
                                                     color: 'white',
-                                                    fontWeight: 'bold',
+                                                    fontWeight: '500',
                                                     cursor: 'pointer'
                                                 }}
                                             >
@@ -179,7 +179,7 @@ function HospitalDashboard() {
                                 </div>
 
                                 <div className="input-container">
-                                    <label>REQUIRED QUANTITY (UNITS)</label>
+                                    <label>Required quantity (units)</label>
                                     <input
                                         className="premium-input"
                                         type="number"
@@ -189,7 +189,7 @@ function HospitalDashboard() {
                                 </div>
 
                                 <button type="submit" className="premium-btn btn-accent" style={{ width: '100%', padding: '1rem' }} disabled={loading}>
-                                    {loading ? 'TRANSMITTING...' : 'INITIATE SOS'}
+                                    {loading ? 'Transmitting...' : 'Initiate SOS'}
                                 </button>
                             </form>
                         </div>
@@ -202,11 +202,11 @@ function HospitalDashboard() {
                             <table className="premium-table">
                                 <thead>
                                     <tr>
-                                        <th>PATIENT ID</th>
-                                        <th>NAME</th>
-                                        <th>BLOOD TYPE</th>
-                                        <th>STATUS</th>
-                                        <th>ADMISSION DATE</th>
+                                        <th>Patient ID</th>
+                                        <th>Name</th>
+                                        <th>Blood type</th>
+                                        <th>Status</th>
+                                        <th>Admission date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -218,7 +218,7 @@ function HospitalDashboard() {
                                         <tr key={p.id}>
                                             <td style={{ opacity: 0.5 }}>{p.id}</td>
                                             <td>{p.name}</td>
-                                            <td style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>{p.group}</td>
+                                            <td style={{ color: 'var(--accent-primary)', fontWeight: '500' }}>{p.group}</td>
                                             <td>
                                                 <span style={{ 
                                                     padding: '2px 8px', 
@@ -228,7 +228,7 @@ function HospitalDashboard() {
                                                     color: p.status === 'CRITICAL' ? '#ff3b3b' : '#10b981',
                                                     border: `1px solid ${p.status === 'CRITICAL' ? 'rgba(255, 59, 59, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`
                                                 }}>
-                                                    {p.status}
+                                                    {p.status.charAt(0) + p.status.slice(1).toLowerCase()}
                                                 </span>
                                             </td>
                                             <td style={{ color: 'var(--text-dim)' }}>{p.date}</td>
@@ -246,18 +246,18 @@ function HospitalDashboard() {
                             <table className="premium-table">
                                 <thead>
                                     <tr>
-                                        <th>REQUEST ID</th>
-                                        <th>TYPE</th>
-                                        <th>UNITS</th>
-                                        <th>DISPATCH NODE</th>
-                                        <th>STATUS</th>
+                                        <th>Request ID</th>
+                                        <th>Type</th>
+                                        <th>Units</th>
+                                        <th>Dispatch node</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {[
-                                        { id: 'REQ-001', type: 'A+', units: 2, node: 'Red Cross IRCS', status: 'FULFILLED' },
-                                        { id: 'REQ-002', type: 'O-', units: 5, node: 'Apollo Central', status: 'PENDING' },
-                                        { id: 'REQ-003', type: 'B+', units: 1, node: 'NIMS Blood Bank', status: 'CANCELLED' }
+                                        { id: 'REQ-001', type: 'A+', units: 2, node: 'Red Cross IRCS', status: 'Fulfilled' },
+                                        { id: 'REQ-002', type: 'O-', units: 5, node: 'Apollo Central', status: 'Pending' },
+                                        { id: 'REQ-003', type: 'B+', units: 1, node: 'NIMS Blood Bank', status: 'Cancelled' }
                                     ].map(r => (
                                         <tr key={r.id}>
                                             <td style={{ opacity: 0.5 }}>{r.id}</td>
@@ -300,7 +300,7 @@ function HospitalDashboard() {
                                         <circle key={i} cx={p.x} cy={p.y} r="4" fill="white" />
                                     ))}
                                 </svg>
-                                <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', color: 'var(--text-dim)' }}>PROJECTED DEMAND INCREASING</div>
+                                <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', color: 'var(--text-dim)' }}>Projected demand increasing</div>
                             </div>
                         </div>
                         <div className="glass-card" style={{ padding: '2rem' }}>
@@ -322,10 +322,10 @@ function HospitalDashboard() {
                                     }}>
                                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255, 59, 59, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--accent-primary)' }}>{item.type}</div>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{item.level} SHORTAGE</div>
+                                            <div style={{ fontWeight: '500', fontSize: '0.9rem' }}>{item.level.charAt(0) + item.level.slice(1).toLowerCase()} shortage</div>
                                             <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Requirement: {item.req} Units</div>
                                         </div>
-                                        <button className="premium-btn btn-accent" style={{ padding: '0.4rem 1rem', fontSize: '0.7rem' }}>DISPATCH</button>
+                                        <button className="premium-btn btn-accent" style={{ padding: '0.4rem 1rem', fontSize: '0.7rem' }}>Dispatch</button>
                                     </div>
                                 ))}
                             </div>

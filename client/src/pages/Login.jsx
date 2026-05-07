@@ -43,8 +43,8 @@ function Login() {
                     />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255, 59, 59, 0.4), rgba(5, 7, 10, 0.9))' }}></div>
                     <div className="animate-in" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem' }} className="title-gradient">Secure Node</h1>
-                        <p style={{ letterSpacing: '0.3em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>ACCESS GRANTED ONLY</p>
+                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem', fontWeight: '500' }} className="title-gradient">Secure Node</h1>
+                        <p style={{ letterSpacing: '0.2em', color: 'var(--accent-primary)', fontSize: '0.8rem' }}>Authorized nodes only</p>
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@ function Login() {
                             className="hover-lift"
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                            BACK TO HUB
+                            Back to hub
                         </button>
 
                         <div 
@@ -127,10 +127,9 @@ function Login() {
                                         background: type === role ? 'rgba(255, 59, 59, 0.1)' : 'transparent',
                                         color: type === role ? 'white' : 'var(--text-dim)',
                                         fontSize: '0.8rem',
-                                        fontWeight: 'bold',
+                                        fontWeight: '500',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        textTransform: 'uppercase'
+                                        transition: 'all 0.3s'
                                     }}
                                 >
                                     {role === 'bloodbank' ? 'Blood Bank' : role}
@@ -140,7 +139,7 @@ function Login() {
 
                         <form onSubmit={handleLogin}>
                             <div className="input-container">
-                                <label>EMAIL ADDRESS</label>
+                                <label>Email address</label>
                                 <input
                                     className="premium-input"
                                     type="email"
@@ -151,7 +150,7 @@ function Login() {
                             </div>
 
                             <div className="input-container">
-                                <label>ENCRYPTED PASSWORD</label>
+                                <label>Secure password</label>
                                 <input
                                     className="premium-input"
                                     type="password"

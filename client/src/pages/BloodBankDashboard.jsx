@@ -85,11 +85,11 @@ function BloodBankDashboard() {
                         }}>
                             <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.02em', fontWeight: '500' }}>
                             Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
                         </h2>
                     </div>
-                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold', marginTop: '0.5rem' }}>SUPPLY NODE</p>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.1em', marginTop: '0.5rem' }}>Supply node</p>
                 </div>
 
                 <div style={{ flex: 1 }}>
@@ -113,9 +113,9 @@ function BloodBankDashboard() {
                 </div>
 
                 <div className="glass-card" style={{ padding: '1rem', marginTop: '2rem' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: 'bold' }}>{user?.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>TELANGANA_GRID_ID: {user?.id?.toString().slice(0, 8)}</p>
-                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>DISCONNECT</button>
+                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: '500' }}>{user?.name}</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>Grid ID: {user?.id?.toString().slice(0, 8)}</p>
+                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>Disconnect</button>
                 </div>
             </div>
 
@@ -146,9 +146,9 @@ function BloodBankDashboard() {
                                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
                                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                 >
-                                    <h3 style={{ fontSize: '3rem', margin: 0 }} className={count < 5 ? 'title-gradient' : ''}>{count}</h3>
-                                    <p style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>{bg}</p>
-                                    {count < 5 && <p style={{ fontSize: '0.6rem', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>CRITICAL STOCK</p>}
+                                    <h3 style={{ fontSize: '3rem', margin: 0, fontWeight: '500' }} className={count < 5 ? 'title-gradient' : ''}>{count}</h3>
+                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>{bg}</p>
+                                    {count < 5 && <p style={{ fontSize: '0.6rem', color: 'var(--accent-primary)', marginTop: '0.5rem' }}>Critical stock</p>}
                                 </div>
                             )
                         })}
@@ -171,7 +171,7 @@ function BloodBankDashboard() {
                                             <h4 style={{ margin: 0, color: 'white' }}>🚨 {alert.hospitalName}</h4>
                                             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginTop: '0.25rem' }}>Requires {alert.units} units of {alert.bloodGroup}</p>
                                         </div>
-                                        <button className="premium-btn btn-accent" style={{ fontSize: '0.7rem' }}>DEPLOY SUPPLY</button>
+                                        <button className="premium-btn btn-accent" style={{ fontSize: '0.7rem' }}>Deploy supply</button>
                                     </div>
                                 ))}
                             </div>
@@ -185,19 +185,19 @@ function BloodBankDashboard() {
                             <table className="premium-table">
                                 <thead>
                                     <tr>
-                                        <th>DISPATCH ID</th>
-                                        <th>DESTINATION</th>
-                                        <th>TYPE</th>
-                                        <th>UNITS</th>
-                                        <th>DATE</th>
-                                        <th>STATUS</th>
+                                        <th>Dispatch ID</th>
+                                        <th>Destination</th>
+                                        <th>Type</th>
+                                        <th>Units</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {[
-                                        { id: 'D-8821', hospital: 'Apollo Jubilee Hills', type: 'O+', units: 4, date: '2024-05-02', status: 'DELIVERED' },
-                                        { id: 'D-8822', hospital: 'Care Hospitals', type: 'A-', units: 2, date: '2024-05-04', status: 'IN_TRANSIT' },
-                                        { id: 'D-8823', hospital: 'Yashoda Secunderabad', type: 'B+', units: 1, date: '2024-05-06', status: 'SCHEDULED' }
+                                        { id: 'D-8821', hospital: 'Apollo Jubilee Hills', type: 'O+', units: 4, date: '2024-05-02', status: 'Delivered' },
+                                        { id: 'D-8822', hospital: 'Care Hospitals', type: 'A-', units: 2, date: '2024-05-04', status: 'In transit' },
+                                        { id: 'D-8823', hospital: 'Yashoda Secunderabad', type: 'B+', units: 1, date: '2024-05-06', status: 'Scheduled' }
                                     ].map(d => (
                                         <tr key={d.id}>
                                             <td style={{ opacity: 0.5 }}>{d.id}</td>
@@ -210,8 +210,8 @@ function BloodBankDashboard() {
                                                     padding: '2px 8px', 
                                                     borderRadius: '4px', 
                                                     fontSize: '0.6rem',
-                                                    background: d.status === 'DELIVERED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 189, 248, 0.1)',
-                                                    color: d.status === 'DELIVERED' ? '#10b981' : '#38bdf8'
+                                                    background: d.status === 'Delivered' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(56, 189, 248, 0.1)',
+                                                    color: d.status === 'Delivered' ? '#10b981' : '#38bdf8'
                                                 }}>
                                                     {d.status}
                                                 </span>
@@ -235,8 +235,8 @@ function BloodBankDashboard() {
                                     <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.1)" strokeDasharray="5,5" />
                                 </svg>
                                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', fontSize: '0.6rem' }}>
-                                    <span><span style={{ color: 'var(--accent-primary)' }}>●</span> SUPPLY TREND</span>
-                                    <span><span style={{ color: 'var(--accent-secondary)' }}>●</span> DEMAND TREND</span>
+                                    <span><span style={{ color: 'var(--accent-primary)' }}>●</span> Supply trend</span>
+                                    <span><span style={{ color: 'var(--accent-secondary)' }}>●</span> Demand trend</span>
                                 </div>
                             </div>
                         </div>

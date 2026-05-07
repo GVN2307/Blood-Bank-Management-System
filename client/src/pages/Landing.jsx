@@ -69,7 +69,7 @@ function Landing() {
                     <div style={{ maxWidth: '800px', marginTop: '4rem' }}>
                         <div className="stat-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '2rem' }}>
                             <span style={{ width: '8px', height: '8px', background: 'var(--accent-primary)', borderRadius: '50%' }}></span>
-                            LIVE: TELANGANA EMERGENCY GRID ACTIVE
+                            Live: Telangana health grid active
                         </div>
 
                         <h1 style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', lineHeight: 1, marginBottom: '2rem' }}>

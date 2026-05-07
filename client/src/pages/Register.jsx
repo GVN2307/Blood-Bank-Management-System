@@ -45,8 +45,8 @@ function Register() {
                     />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255, 59, 59, 0.4), rgba(5, 7, 10, 0.9))' }}></div>
                     <div className="animate-in" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem' }} className="title-gradient">Join Grid</h1>
-                        <p style={{ letterSpacing: '0.3em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>NETWORK REGISTRATION</p>
+                        <h1 style={{ fontSize: '4rem', marginBottom: '0.5rem', fontWeight: '500' }} className="title-gradient">Join Grid</h1>
+                        <p style={{ letterSpacing: '0.2em', color: 'var(--accent-primary)', fontSize: '0.8rem' }}>Network registration</p>
                     </div>
                 </div>
 
@@ -83,7 +83,7 @@ function Register() {
                             className="hover-lift"
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                            BACK TO HUB
+                            Back to hub
                         </button>
 
                         <div 
@@ -117,7 +117,7 @@ function Register() {
 
                         <form onSubmit={handleRegister}>
                             <div className="input-container">
-                                <label>ACCOUNT CLASSIFICATION</label>
+                                <label>Account classification</label>
                                 <select 
                                     name="type" 
                                     className="premium-input" 
@@ -133,28 +133,28 @@ function Register() {
 
                             <div className="grid-cols-2" style={{ gap: '1rem' }}>
                                 <div className="input-container">
-                                    <label>FULL NAME</label>
+                                    <label>Full name</label>
                                     <input className="premium-input" type="text" name="name" value={formData.name} onChange={handleChange} required />
                                 </div>
                                 <div className="input-container">
-                                    <label>EMAIL ADDRESS</label>
+                                    <label>Email address</label>
                                     <input className="premium-input" type="email" name="email" value={formData.email} onChange={handleChange} required />
                                 </div>
                             </div>
 
                             <div className="grid-cols-2" style={{ gap: '1rem' }}>
                                 <div className="input-container">
-                                    <label>PASSWORD</label>
+                                    <label>Password</label>
                                     <input className="premium-input" type="password" name="password" value={formData.password} onChange={handleChange} required />
                                 </div>
                                 <div className="input-container">
-                                    <label>PHONE</label>
+                                    <label>Phone</label>
                                     <input className="premium-input" type="text" name="phone" value={formData.phone} onChange={handleChange} required />
                                 </div>
                             </div>
 
                             <div className="input-container">
-                                <label>PHYSICAL ADDRESS</label>
+                                <label>Physical address</label>
                                 <input className="premium-input" type="text" name="address" value={formData.address} onChange={handleChange} required />
                             </div>
 

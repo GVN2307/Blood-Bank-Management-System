@@ -57,11 +57,11 @@ function UserDashboard() {
                         }}>
                             <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.02em', fontWeight: '500' }}>
                             Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
                         </h2>
                     </div>
-                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold', marginTop: '0.5rem' }}>CITIZEN HUB</p>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.1em', marginTop: '0.5rem' }}>Citizen hub</p>
                 </div>
 
                 <div style={{ flex: 1 }}>
@@ -85,9 +85,9 @@ function UserDashboard() {
                 </div>
 
                 <div className="glass-card" style={{ padding: '1rem', marginTop: '2rem' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: 'bold' }}>{user?.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>G-ID: {user?.id?.toString().slice(0, 8)}</p>
-                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>DISCONNECT</button>
+                    <p style={{ fontSize: '0.8rem', color: 'white', marginBottom: '0.2rem', fontWeight: '500' }}>{user?.name}</p>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>Grid ID: {user?.id?.toString().slice(0, 8)}</p>
+                    <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', padding: '0.5rem', fontSize: '0.7rem' }}>Disconnect</button>
                 </div>
             </div>
 
@@ -99,7 +99,7 @@ function UserDashboard() {
                         <p style={{ color: 'var(--text-dim)' }}>Your health contributions are strengthening the regional grid.</p>
                     </div>
                     <div className="glass-card" style={{ padding: '1.5rem 2.5rem', textAlign: 'center', borderColor: 'var(--accent-primary)' }}>
-                        <p style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 'bold', marginBottom: '0.5rem' }}>BLOOD GROUP</p>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: '500', marginBottom: '0.5rem' }}>Blood group</p>
                         <h3 style={{ fontSize: '2rem', margin: 0 }}>{user.bloodGroup || 'O+'}</h3>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ function UserDashboard() {
                             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', flex: 1, marginBottom: '2rem' }}>
                                 Find nearby accredited nodes and book prioritized diagnostic screenings.
                             </p>
-                            <button onClick={() => navigate('/test-schedule')} className="premium-btn btn-accent" style={{ width: '100%', padding: '0.75rem' }}>BOOK SCAN</button>
+                            <button onClick={() => navigate('/test-schedule')} className="premium-btn btn-accent" style={{ width: '100%', padding: '0.75rem' }}>Book scan</button>
                         </div>
 
                         <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
@@ -119,7 +119,7 @@ function UserDashboard() {
                             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', flex: 1, marginBottom: '2rem' }}>
                                 Secure access to your encrypted medical history and donation records.
                             </p>
-                            <button onClick={() => navigate('/user-reports')} className="premium-btn" style={{ width: '100%', padding: '0.75rem' }}>OPEN VAULT</button>
+                            <button onClick={() => navigate('/user-reports')} className="premium-btn" style={{ width: '100%', padding: '0.75rem' }}>Open vault</button>
                         </div>
 
                         <div className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
@@ -127,7 +127,7 @@ function UserDashboard() {
                             <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', flex: 1, marginBottom: '2rem' }}>
                                 View how your contributions are being utilized in emergency sectors.
                             </p>
-                            <button onClick={() => navigate('/community')} className="premium-btn" style={{ width: '100%', padding: '0.75rem' }}>VIEW STATS</button>
+                            <button onClick={() => navigate('/community')} className="premium-btn" style={{ width: '100%', padding: '0.75rem' }}>View stats</button>
                         </div>
                     </div>
                 )}
@@ -138,11 +138,11 @@ function UserDashboard() {
                             <table className="premium-table">
                                 <thead>
                                     <tr>
-                                        <th>BATCH ID</th>
-                                        <th>CENTER</th>
-                                        <th>QUANTITY</th>
-                                        <th>DATE</th>
-                                        <th>STATUS</th>
+                                        <th>Batch ID</th>
+                                        <th>Center</th>
+                                        <th>Quantity</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -153,7 +153,7 @@ function UserDashboard() {
                                             <td>{d.units} Unit(s)</td>
                                             <td>{new Date(d.donation_date).toLocaleDateString()}</td>
                                             <td>
-                                                <span className="stat-pill" style={{ fontSize: '0.6rem', color: '#10B981' }}>VERIFIED</span>
+                                                <span className="stat-pill" style={{ fontSize: '0.6rem', color: '#10B981' }}>Verified</span>
                                             </td>
                                         </tr>
                                     )) : (
@@ -182,7 +182,7 @@ function UserDashboard() {
                             <div className="glass-card" style={{ padding: '2rem' }}>
                                 <h3>Eligibility Status</h3>
                                 <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
-                                    <p style={{ color: '#10b981', fontWeight: 'bold' }}>READY FOR DONATION</p>
+                                    <p style={{ color: '#10b981', fontWeight: '500' }}>Ready for donation</p>
                                     <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Next window opens in 12 days.</p>
                                 </div>
                             </div>
@@ -229,7 +229,7 @@ function UserDashboard() {
                                 </svg>
                                 <div style={{ position: 'absolute', top: '1rem', right: '1rem', textAlign: 'right' }}>
                                     <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-primary)' }}>1,402</div>
-                                    <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>LIVES IMPACTED IN REGION</div>
+                                    <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>Lives impacted in region</div>
                                 </div>
                             </div>
                             <div className="grid-cols-3" style={{ gap: '1rem', marginTop: '2rem' }}>
@@ -239,12 +239,12 @@ function UserDashboard() {
                                     { label: 'Network Health', val: '99.9%', color: '#10b981' }
                                 ].map(stat => (
                                     <div key={stat.label} className="glass-card" style={{ padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: stat.color }}>{stat.val}</div>
-                                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>{stat.label}</div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: '500', color: stat.color }}>{stat.val}</div>
+                                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
-                            <button onClick={() => navigate('/community')} className="premium-btn btn-accent" style={{ marginTop: '2rem', width: '100%' }}>Enter Community Hub</button>
+                            <button onClick={() => navigate('/community')} className="premium-btn btn-accent" style={{ marginTop: '2rem', width: '100%' }}>Enter community hub</button>
                         </div>
                     </div>
                 )}
