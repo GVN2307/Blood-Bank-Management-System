@@ -55,6 +55,16 @@ function AdminDashboard() {
         }
     };
 
+    if (!stats && !users.length) {
+        return (
+            <div className="page-wrapper flex-center" style={{ flexDirection: 'column' }}>
+                <div className="app-bg"></div>
+                <div style={{ width: '60px', height: '60px', border: '3px solid var(--accent-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                <p style={{ marginTop: '2rem', color: 'var(--text-dim)', letterSpacing: '0.2em' }}>SYNCHRONIZING NETWORK TELEMETRY...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="page-wrapper" style={{ padding: 0, maxWidth: 'none', display: 'flex' }}>
             <div className="app-bg"></div>
@@ -71,11 +81,32 @@ function AdminDashboard() {
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'sticky',
-                top: 0
+                top: 0,
+                zIndex: 100
             }}>
                 <div style={{ marginBottom: '3rem' }}>
-                    <h2 style={{ fontSize: '1.5rem' }}>Life<span style={{ color: 'var(--accent-primary)' }}>Link</span></h2>
-                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.2em' }}>ADMINISTRATIVE CONSOLE</p>
+                    <div 
+                        className="flex-center hover-lift" 
+                        style={{ gap: '12px', cursor: 'pointer', justifyContent: 'flex-start' }}
+                        onClick={() => navigate('/')}
+                    >
+                        <div style={{ 
+                            width: '32px', 
+                            height: '32px', 
+                            background: 'var(--accent-primary)', 
+                            borderRadius: '8px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            boxShadow: '0 0 15px rgba(255, 59, 59, 0.3)'
+                        }}>
+                            <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
+                        </div>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                            Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
+                        </h2>
+                    </div>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.2em', marginTop: '0.5rem' }}>ADMINISTRATIVE CONSOLE</p>
                 </div>
 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

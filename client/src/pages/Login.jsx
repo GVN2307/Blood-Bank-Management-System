@@ -49,7 +49,64 @@ function Login() {
                 </div>
 
                 {/* Right: Form Side */}
-                <div className="flex-center" style={{ padding: '2rem' }}>
+                <div className="flex-center" style={{ padding: '2rem', position: 'relative' }}>
+                    {/* Floating Back Button & Logo */}
+                    <div style={{ 
+                        position: 'absolute', 
+                        top: '2.5rem', 
+                        left: '2.5rem', 
+                        right: '2.5rem', 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        zIndex: 100
+                    }}>
+                        <button 
+                            onClick={() => navigate('/')}
+                            style={{ 
+                                background: 'rgba(255, 255, 255, 0.05)', 
+                                border: '1px solid var(--border-glass)', 
+                                color: 'white', 
+                                padding: '0.7rem 1.4rem', 
+                                borderRadius: '30px', 
+                                cursor: 'pointer',
+                                fontSize: '0.85rem',
+                                fontWeight: '600',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                transition: 'all 0.3s',
+                                backdropFilter: 'blur(10px)'
+                            }}
+                            className="hover-lift"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            BACK TO HUB
+                        </button>
+
+                        <div 
+                            className="flex-center hover-lift" 
+                            style={{ gap: '12px', cursor: 'pointer' }}
+                            onClick={() => navigate('/')}
+                        >
+                            <div style={{ 
+                                width: '32px', 
+                                height: '32px', 
+                                background: 'var(--accent-primary)', 
+                                borderRadius: '8px', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                boxShadow: '0 0 15px rgba(255, 59, 59, 0.3)'
+                            }}>
+                                <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
+                            </div>
+                            <h2 style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '-0.03em' }}>
+                                Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
+                            </h2>
+                        </div>
+                    </div>
+
                     <div className="glass-card animate-in" style={{ width: '100%', maxWidth: '480px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                         <div style={{ marginBottom: '3rem' }}>
                             <h2 style={{ fontSize: '2.5rem' }} className="title-gradient">Welcome Back</h2>
@@ -124,4 +181,3 @@ function Login() {
 }
 
 export default Login;
-

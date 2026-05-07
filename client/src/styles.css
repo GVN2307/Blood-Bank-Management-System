@@ -210,10 +210,77 @@ h1, h2, h3, h4 {
     box-shadow: 0 0 0 4px rgba(255, 59, 59, 0.1);
 }
 
+/* --- Premium Table Design --- */
+.premium-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+}
+
+.premium-table th {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.premium-table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    font-size: 0.9rem;
+    color: var(--text-white);
+    transition: background 0.3s ease;
+}
+
+.premium-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.premium-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* --- Interactive States --- */
+.hover-lift {
+    transition: transform 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth) !important;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* --- Enhanced Stat Pills --- */
+.stat-pill.warning {
+    background: rgba(255, 170, 0, 0.1);
+    border-color: rgba(255, 170, 0, 0.2);
+    color: #FFAA00;
+}
+
+.stat-pill.success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #10B981;
+}
+
 /* --- Animations --- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .animate-in {
@@ -233,8 +300,14 @@ h1, h2, h3, h4 {
 
 @media (max-width: 1024px) {
     .grid-cols-3, .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .page-wrapper { padding: 1.5rem; }
+}
+
+@media (max-width: 768px) {
+    .nav-dock { border-radius: 20px; padding: 0.75rem 1rem; }
 }
 
 @media (max-width: 640px) {
     .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr; }
-}
+    .title-gradient { font-size: 2.5rem !important; }
+}

@@ -23,21 +23,20 @@ function HospitalDashboard() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        if (!user || user.type !== 'hospital') {
-            navigate('/login');
-            return;
-        }
-
         api.get('/bloodbanks')
             .then(res => setBloodBanks(res.data))
             .catch(err => console.error('Fetch Banks Error:', err));
 
         if (window.location.hostname === 'localhost') {
-            const socket = io('http://localhost:3000');
-            socket.emit('join_room', 'hospital');
-            return () => socket.disconnect();
+            try {
+                const socket = io('http://localhost:3000');
+                socket.emit('join_room', 'hospital');
+                return () => socket.disconnect();
+            } catch (err) {
+                console.warn('Real-time alert grid disconnected. Operating in manual telemetry mode.');
+            }
         }
-    }, [navigate]);
+    }, []);
 
     const handleRequest = async (e) => {
         e.preventDefault();
@@ -65,10 +64,30 @@ function HospitalDashboard() {
             <div className="mesh-grid"></div>
 
             {/* Sidebar */}
-            <div style={{ width: '300px', background: 'rgba(5, 7, 10, 0.8)', backdropFilter: 'blur(20px)', borderRight: '1px solid var(--border-glass)', z_index: 100, height: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: '300px', background: 'rgba(5, 7, 10, 0.8)', backdropFilter: 'blur(20px)', borderRight: '1px solid var(--border-glass)', zIndex: 100, height: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ marginBottom: '3rem' }}>
-                    <h1 style={{ fontSize: '1.5rem', margin: 0 }} className="title-gradient">LifeLink</h1>
-                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold' }}>HOSPITAL NODE</p>
+                    <div 
+                        className="flex-center hover-lift" 
+                        style={{ gap: '12px', cursor: 'pointer', justifyContent: 'flex-start' }}
+                        onClick={() => navigate('/')}
+                    >
+                        <div style={{ 
+                            width: '32px', 
+                            height: '32px', 
+                            background: 'var(--accent-primary)', 
+                            borderRadius: '8px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            boxShadow: '0 0 15px rgba(255, 59, 59, 0.3)'
+                        }}>
+                            <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
+                        </div>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, letterSpacing: '-0.03em' }}>
+                            Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
+                        </h2>
+                    </div>
+                    <p style={{ fontSize: '0.7rem', letterSpacing: '0.2em', color: 'var(--accent-primary)', fontWeight: 'bold', marginTop: '0.5rem' }}>HOSPITAL NODE</p>
                 </div>
 
                 <div style={{ flex: 1 }}>

@@ -37,16 +37,31 @@ function Landing() {
                 </div>
 
                 <div className="page-wrapper animate-in" style={{ marginTop: 0 }}>
-                    <div className="nav-dock">
-                        <div className="flex-center" style={{ gap: '10px' }}>
-                            <div style={{ width: '32px', height: '32px', background: 'var(--accent-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ color: 'white', fontWeight: 'bold' }}>L</span>
+                    <div className="nav-dock" style={{ zIndex: 1000 }}>
+                        <div 
+                            className="flex-center hover-lift" 
+                            style={{ gap: '12px', cursor: 'pointer' }}
+                            onClick={() => navigate('/')}
+                        >
+                            <div style={{ 
+                                width: '36px', 
+                                height: '36px', 
+                                background: 'var(--accent-primary)', 
+                                borderRadius: '10px', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                boxShadow: '0 0 20px rgba(255, 59, 59, 0.4)'
+                            }}>
+                                <span style={{ color: 'white', fontWeight: '900', fontSize: '1.2rem' }}>L</span>
                             </div>
-                            <h2 style={{ fontSize: '1.5rem' }}>Life<span style={{ color: 'var(--accent-primary)' }}>Link</span></h2>
+                            <h2 style={{ fontSize: '1.6rem', margin: 0, letterSpacing: '-0.03em' }}>
+                                Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
+                            </h2>
                         </div>
                         <div className="flex-center" style={{ gap: '2rem' }}>
-                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-dim)', cursor: 'pointer' }}>Network</span>
-                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-dim)', cursor: 'pointer' }}>Stats</span>
+                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-white)', cursor: 'pointer', fontWeight: '500' }}>Network</span>
+                            <span onClick={() => navigate('/community')} style={{ fontSize: '0.9rem', color: 'var(--text-white)', cursor: 'pointer', fontWeight: '500' }}>Stats</span>
                             <button onClick={() => navigate('/login')} className="premium-btn btn-accent" style={{ padding: '0.5rem 1.5rem', fontSize: '0.8rem' }}>Login</button>
                         </div>
                     </div>
@@ -98,4 +113,3 @@ function Landing() {
 }
 
 export default Landing;
-

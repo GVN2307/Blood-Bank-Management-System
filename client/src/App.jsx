@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Community from './pages/Community';
 import TestSchedule from './pages/TestSchedule';
 import UserReports from './pages/UserReports';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
@@ -18,13 +19,41 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
-                <Route path="/bloodbank-dashboard" element={<BloodBankDashboard />} />
-                <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/test-schedule" element={<TestSchedule />} />
-                <Route path="/user-reports" element={<UserReports />} />
+                <Route path="/hospital-dashboard" element={
+                    <ProtectedRoute allowedTypes={['hospital']}>
+                        <HospitalDashboard />
+                    </ProtectedRoute>
+                } />
+                <Route path="/bloodbank-dashboard" element={
+                    <ProtectedRoute allowedTypes={['bloodbank']}>
+                        <BloodBankDashboard />
+                    </ProtectedRoute>
+                } />
+                <Route path="/user-dashboard" element={
+                    <ProtectedRoute allowedTypes={['user']}>
+                        <UserDashboard />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin-dashboard" element={
+                    <ProtectedRoute allowedTypes={['admin']}>
+                        <AdminDashboard />
+                    </ProtectedRoute>
+                } />
+                <Route path="/community" element={
+                    <ProtectedRoute>
+                        <Community />
+                    </ProtectedRoute>
+                } />
+                <Route path="/test-schedule" element={
+                    <ProtectedRoute allowedTypes={['user']}>
+                        <TestSchedule />
+                    </ProtectedRoute>
+                } />
+                <Route path="/user-reports" element={
+                    <ProtectedRoute allowedTypes={['user']}>
+                        <UserReports />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </Router>
     );

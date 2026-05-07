@@ -45,7 +45,52 @@ function TestSchedule() {
             <div className="mesh-grid"></div>
 
             <div className="container animate-in" style={{ maxWidth: '900px', padding: '4rem 2rem' }}>
-                <button onClick={() => navigate('/user-dashboard')} className="premium-btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; BACK TO HUB</button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                    <button 
+                        onClick={() => navigate('/user-dashboard')} 
+                        style={{ 
+                            background: 'rgba(255, 255, 255, 0.05)', 
+                            border: '1px solid var(--border-glass)', 
+                            color: 'white', 
+                            padding: '0.7rem 1.4rem', 
+                            borderRadius: '30px', 
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            transition: 'all 0.3s',
+                            backdropFilter: 'blur(10px)'
+                        }}
+                        className="hover-lift"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        BACK TO HUB
+                    </button>
+
+                    <div 
+                        className="flex-center hover-lift" 
+                        style={{ gap: '12px', cursor: 'pointer' }}
+                        onClick={() => navigate('/')}
+                    >
+                        <div style={{ 
+                            width: '32px', 
+                            height: '32px', 
+                            background: 'var(--accent-primary)', 
+                            borderRadius: '8px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            boxShadow: '0 0 15px rgba(255, 59, 59, 0.3)'
+                        }}>
+                            <span style={{ color: 'white', fontWeight: '900', fontSize: '1rem' }}>L</span>
+                        </div>
+                        <h2 style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '-0.03em' }}>
+                            Life<span style={{ color: 'var(--accent-primary)' }}>Link</span>
+                        </h2>
+                    </div>
+                </div>
 
                 <div className="glass-card" style={{ padding: '3rem' }}>
                     <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
